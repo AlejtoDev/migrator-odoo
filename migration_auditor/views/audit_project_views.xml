@@ -191,7 +191,7 @@
                 <field name="total_hours"/>
                 <field name="total_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                 <field name="state" widget="badge"
-                       decoration-secondary="state == 'draft'"
+                       decoration-muted="state == 'draft'"
                        decoration-warning="state == 'scanning'"
                        decoration-success="state == 'done'"
                        decoration-danger="state == 'error'"/>
