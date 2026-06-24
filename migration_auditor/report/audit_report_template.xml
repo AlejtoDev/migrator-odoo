@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="report_audit_project">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="doc">
+            <t t-call="web.external_layout">
+                <div class="page">
+
+                    <!-- Cabecera -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h1 class="text-center">Informe de Auditoría de Migración</h1>
+                            <h3 class="text-center text-muted"><t t-esc="doc.name"/></h3>
+                        </div>
+                    </div>
+
+                    <!-- Datos generales -->
+                    <table class="table table-sm mb-4">
+                        <tbody>
+                            <tr>
+                                <td><strong>Cliente:</strong></td>
+                                <td><t t-esc="doc.client_name"/></td>
+                                <td><strong>Fecha escaneo:</strong></td>
+                                <td><t t-esc="doc.scan_date and doc.scan_date.strftime('%d/%m/%Y %H:%M') or 'Pendiente'"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Versión Odoo origen:</strong></td>
+                                <td><t t-esc="doc.odoo_version_detected or 'Desconocida'"/></td>
+                                <td><strong>Modo de auditoría:</strong></td>
+                                <td><t t-esc="dict(doc._fields['audit_mode'].selection).get(doc.audit_mode, doc.audit_mode)"/></td>
+                            </tr>
+                            <tr t-if="doc.is_enterprise">
+                                <td colspan="4"><strong>⚠ Instancia Enterprise detectada</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Resumen ejecutivo -->
+                    <t t-if="doc.executive_summary">
+                        <h4>Resumen Ejecutivo</h4>
+                        <div class="mb-4"><t t-raw="doc.executive_summary"/></div>
+                    </t>
+
+                    <!-- Módulos instalados -->
+                    <t t-if="doc.module_finding_ids">
+                        <h4>Inventario de Módulos (<t t-esc="len(doc.module_finding_ids)"/> total)</h4>
+                        <table class="table table-sm table-bordered mb-4">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Nombre técnico</th>
+                                    <th>Nombre</th>
+                                    <th>Categoría</th>
+                                    <th>Versión</th>
+                                    <th>Riesgo compatibilidad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.module_finding_ids.filtered('is_relevant')" t-as="mod">
+                                    <tr>
+                                        <td><t t-esc="mod.name"/></td>
+                                        <td><t t-esc="mod.display_name_module"/></td>
+                                        <td><t t-esc="dict(mod._fields['module_category'].selection).get(mod.module_category, '')"/></td>
+                                        <td><t t-esc="mod.version"/></td>
+                                        <td><t t-esc="dict(mod._fields['compatibility_risk'].selection).get(mod.compatibility_risk, '')"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t>
+
+                    <!-- Campos custom / Studio -->
+                    <t t-if="doc.field_finding_ids">
+                        <h4>Campos Custom y Studio (<t t-esc="len(doc.field_finding_ids)"/> total)</h4>
+                        <table class="table table-sm table-bordered mb-4">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Campo</th>
+                                    <th>Modelo</th>
+                                    <th>Tipo</th>
+                                    <th>Origen</th>
+                                    <th>Registros con datos</th>
+                                    <th>Decisión</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.field_finding_ids" t-as="fld">
+                                    <tr>
+                                        <td><t t-esc="fld.name"/></td>
+                                        <td><t t-esc="fld.model_name"/></td>
+                                        <td><t t-esc="fld.field_type"/></td>
+                                        <td><t t-esc="dict(fld._fields['field_origin'].selection).get(fld.field_origin, '')"/></td>
+                                        <td><t t-esc="fld.record_count_with_value"/></td>
+                                        <td><t t-esc="dict(fld._fields['migration_decision'].selection).get(fld.migration_decision, '')"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t>
+
+                    <!-- Modelos custom -->
+                    <t t-if="doc.model_finding_ids">
+                        <h4>Modelos Custom (<t t-esc="len(doc.model_finding_ids)"/> total)</h4>
+                        <table class="table table-sm table-bordered mb-4">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Modelo</th>
+                                    <th>Descripción</th>
+                                    <th>Campos</th>
+                                    <th>Registros</th>
+                                    <th>Decisión</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.model_finding_ids" t-as="mdl">
+                                    <tr>
+                                        <td><t t-esc="mdl.name"/></td>
+                                        <td><t t-esc="mdl.description"/></td>
+                                        <td><t t-esc="mdl.field_count"/></td>
+                                        <td><t t-esc="mdl.record_count"/></td>
+                                        <td><t t-esc="dict(mdl._fields['migration_decision'].selection).get(mdl.migration_decision, '')"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t>
+
+                    <!-- Volumen de datos -->
+                    <t t-if="doc.volume_finding_ids">
+                        <h4>Volumen de Datos</h4>
+                        <table class="table table-sm table-bordered mb-4">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Modelo</th>
+                                    <th>Registros</th>
+                                    <th>Nivel de volumen</th>
+                                    <th>Horas extra ETL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.volume_finding_ids" t-as="vol">
+                                    <tr>
+                                        <td><t t-esc="vol.display_name"/></td>
+                                        <td><t t-esc="'{:,}'.format(vol.record_count)"/></td>
+                                        <td><t t-esc="dict(vol._fields['volume_tier'].selection).get(vol.volume_tier, '')"/></td>
+                                        <td><t t-esc="vol.effort_extra_hours"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t>
+
+                    <!-- Estimación de horas -->
+                    <t t-if="doc.effort_line_ids">
+                        <h4>Estimación de Horas y Presupuesto</h4>
+                        <table class="table table-sm table-bordered mb-2">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Categoría</th>
+                                    <th>Descripción</th>
+                                    <th class="text-right">Horas</th>
+                                    <th class="text-right">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.effort_line_ids" t-as="line">
+                                    <tr>
+                                        <td><t t-esc="dict(line._fields['category'].selection).get(line.category, '')"/></td>
+                                        <td><t t-esc="line.description"/></td>
+                                        <td class="text-right"><t t-esc="'%.1f' % line.estimated_hours"/></td>
+                                        <td class="text-right"><t t-esc="'%.2f' % line.subtotal"/> <t t-esc="doc.currency_id.symbol"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr class="font-weight-bold">
+                                    <td colspan="2" class="text-right">TOTAL</td>
+                                    <td class="text-right"><t t-esc="'%.1f' % doc.total_hours"/> h</td>
+                                    <td class="text-right"><t t-esc="'%.2f' % doc.total_cost"/> <t t-esc="doc.currency_id.symbol"/></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <p class="text-muted small">
+                            Tarifa horaria: <t t-esc="'%.2f' % doc.hourly_rate"/>
+                            <t t-esc="doc.currency_id.symbol"/>/hora
+                        </p>
+                    </t>
+
+                    <!-- Notas del consultor -->
+                    <t t-if="doc.consultant_notes">
+                        <h4>Notas del Consultor</h4>
+                        <div class="mb-4"><t t-raw="doc.consultant_notes"/></div>
+                    </t>
+
+                </div>
+            </t>
+        </t>
+    </t>
+</template>
+</odoo>

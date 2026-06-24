@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         MÓDULOS
+    ════════════════════════════════════════════════════════════════ -->
+    <record id="view_audit_module_finding_form" model="ir.ui.view">
+        <field name="name">audit.module.finding.form</field>
+        <field name="model">audit.module.finding</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="project_id"/>
+                            <field name="name"/>
+                            <field name="display_name_module"/>
+                            <field name="author"/>
+                            <field name="version"/>
+                        </group>
+                        <group>
+                            <field name="module_category"/>
+                            <field name="compatibility_risk"/>
+                            <field name="is_relevant" widget="boolean_toggle"/>
+                            <field name="effort_hours"/>
+                        </group>
+                    </group>
+                    <field name="notes" string="Notas" placeholder="Observaciones sobre este módulo..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_audit_module_finding_tree" model="ir.ui.view">
+        <field name="name">audit.module.finding.tree</field>
+        <field name="model">audit.module.finding</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="project_id"/>
+                <field name="name"/>
+                <field name="display_name_module"/>
+                <field name="module_category" widget="badge"
+                       decoration-success="module_category == 'odoo_official'"
+                       decoration-info="module_category == 'oca'"
+                       decoration-warning="module_category == 'enterprise'"
+                       decoration-danger="module_category == 'custom'"/>
+                <field name="version"/>
+                <field name="compatibility_risk" widget="badge"
+                       decoration-success="compatibility_risk == 'low'"
+                       decoration-warning="compatibility_risk == 'medium'"
+                       decoration-danger="compatibility_risk == 'high'"/>
+                <field name="is_relevant"/>
+                <field name="effort_hours"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_audit_module_finding" model="ir.actions.act_window">
+        <field name="name">Hallazgos: Módulos</field>
+        <field name="res_model">audit.module.finding</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         CAMPOS
+    ════════════════════════════════════════════════════════════════ -->
+    <record id="view_audit_field_finding_form" model="ir.ui.view">
+        <field name="name">audit.field.finding.form</field>
+        <field name="model">audit.field.finding</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="project_id"/>
+                            <field name="name"/>
+                            <field name="field_description"/>
+                            <field name="model_name"/>
+                            <field name="field_type"/>
+                        </group>
+                        <group>
+                            <field name="field_origin"/>
+                            <field name="has_data" widget="boolean_toggle"/>
+                            <field name="record_count_with_value"/>
+                            <field name="migration_decision"/>
+                        </group>
+                    </group>
+                    <field name="notes" string="Notas"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_audit_field_finding_tree" model="ir.ui.view">
+        <field name="name">audit.field.finding.tree</field>
+        <field name="model">audit.field.finding</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="project_id"/>
+                <field name="name"/>
+                <field name="model_name"/>
+                <field name="field_type"/>
+                <field name="field_origin" widget="badge"
+                       decoration-info="field_origin == 'studio'"
+                       decoration-warning="field_origin == 'custom_dev'"
+                       decoration-muted="field_origin == 'other_manual'"/>
+                <field name="has_data"/>
+                <field name="record_count_with_value"/>
+                <field name="migration_decision"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_audit_field_finding" model="ir.actions.act_window">
+        <field name="name">Hallazgos: Campos custom</field>
+        <field name="res_model">audit.field.finding</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         MODELOS CUSTOM
+    ════════════════════════════════════════════════════════════════ -->
+    <record id="view_audit_model_finding_form" model="ir.ui.view">
+        <field name="name">audit.model.finding.form</field>
+        <field name="model">audit.model.finding</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="project_id"/>
+                            <field name="name"/>
+                            <field name="description"/>
+                            <field name="field_count"/>
+                            <field name="record_count"/>
+                        </group>
+                        <group>
+                            <field name="has_menu" widget="boolean_toggle"/>
+                            <field name="migration_decision"/>
+                            <field name="effort_hours"/>
+                        </group>
+                    </group>
+                    <field name="notes" string="Notas"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_audit_model_finding_tree" model="ir.ui.view">
+        <field name="name">audit.model.finding.tree</field>
+        <field name="model">audit.model.finding</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="project_id"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="field_count"/>
+                <field name="record_count"/>
+                <field name="has_menu"/>
+                <field name="migration_decision"/>
+                <field name="effort_hours"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_audit_model_finding" model="ir.actions.act_window">
+        <field name="name">Hallazgos: Modelos custom</field>
+        <field name="res_model">audit.model.finding</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         VOLUMEN
+    ════════════════════════════════════════════════════════════════ -->
+    <record id="view_audit_volume_finding_tree" model="ir.ui.view">
+        <field name="name">audit.volume.finding.tree</field>
+        <field name="model">audit.volume.finding</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="project_id"/>
+                <field name="display_name"/>
+                <field name="model_name"/>
+                <field name="record_count"/>
+                <field name="volume_tier" widget="badge"
+                       decoration-success="volume_tier == 'low'"
+                       decoration-warning="volume_tier == 'medium'"
+                       decoration-danger="volume_tier == 'high'"/>
+                <field name="effort_extra_hours"/>
+                <field name="notes"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_audit_volume_finding" model="ir.actions.act_window">
+        <field name="name">Hallazgos: Volumen de datos</field>
+        <field name="res_model">audit.volume.finding</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+</data>
+</odoo>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!-- Las effort lines no tienen vista propia: se editan inline en el form del proyecto.
+         Esta action sirve para ver el listado global si se necesita. -->
+
+    <record id="view_audit_effort_line_tree" model="ir.ui.view">
+        <field name="name">audit.effort.line.tree</field>
+        <field name="model">audit.effort.line</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="project_id"/>
+                <field name="category"/>
+                <field name="description"/>
+                <field name="source" readonly="1"/>
+                <field name="estimated_hours"/>
+                <field name="unit_price"/>
+                <field name="subtotal"/>
+                <field name="reference"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_audit_effort_line" model="ir.actions.act_window">
+        <field name="name">Líneas de estimación</field>
+        <field name="res_model">audit.effort.line</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+</data>
+</odoo>

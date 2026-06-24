@@ -1,0 +1,94 @@
+import socket
+import xmlrpc.client
+import logging
+
+_logger = logging.getLogger(__name__)
+
+# Timeout global para evitar que el wizard cuelgue si el cliente no responde
+socket.setdefaulttimeout(30)
+
+
+class OdooXmlRpcClient:
+    """Wrapper sobre el XML-RPC de Odoo para auditoría remota."""
+
+    def __init__(self, url, database, username, password):
+        self.url = url.rstrip('/')
+        self.database = database
+        self.username = username
+        self.password = password
+        self._uid = None
+        self._authenticate()
+
+    def _authenticate(self):
+        common = xmlrpc.client.ServerProxy(f'{self.url}/xmlrpc/2/common')
+        self._uid = common.authenticate(
+            self.database, self.username, self.password, {}
+        )
+        if not self._uid:
+            raise ConnectionError(
+                f'Autenticación fallida para {self.username}@{self.database}'
+            )
+
+    def get_server_version(self):
+        common = xmlrpc.client.ServerProxy(f'{self.url}/xmlrpc/2/common')
+        return common.version()
+
+    def execute(self, model, method, domain=None, fields=None, **kwargs):
+        models_proxy = xmlrpc.client.ServerProxy(f'{self.url}/xmlrpc/2/object')
+        args = [domain or []]
+        if fields:
+            kwargs['fields'] = fields
+        return models_proxy.execute_kw(
+            self.database, self._uid, self.password,
+            model, method, args, kwargs
+        )
+
+    def search_read(self, model, domain=None, fields=None, limit=0, offset=0):
+        return self.execute(
+            model, 'search_read',
+            domain=domain or [],
+            fields=fields or [],
+            limit=limit,
+            offset=offset,
+        )
+
+    def search_count(self, model, domain=None):
+        return self.execute(model, 'search_count', domain=domain or [])
+
+    # ── Métodos de auditoría ──────────────────────────────────────────────
+
+    def get_installed_modules(self):
+        return self.search_read(
+            'ir.module.module',
+            domain=[('state', '=', 'installed')],
+            fields=['name', 'shortdesc', 'author', 'installed_version', 'state'],
+        )
+
+    def get_custom_fields(self):
+        return self.search_read(
+            'ir.model.fields',
+            domain=[('state', '=', 'manual')],
+            fields=['name', 'field_description', 'model_id', 'ttype', 'state'],
+        )
+
+    def get_custom_models(self):
+        return self.search_read(
+            'ir.model',
+            domain=[('state', '=', 'manual')],
+            fields=['name', 'model', 'field_id', 'info'],
+        )
+
+    def get_record_count(self, model_name):
+        try:
+            return self.search_count(model_name)
+        except Exception:
+            return -1
+
+    def get_field_value_count(self, model_name, field_name):
+        try:
+            return self.search_count(
+                model_name,
+                domain=[(field_name, 'not in', [False, '', 0])]
+            )
+        except Exception:
+            return -1

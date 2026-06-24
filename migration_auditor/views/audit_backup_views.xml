@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!-- ── Form ── -->
+    <record id="view_audit_backup_form" model="ir.ui.view">
+        <field name="name">audit.backup.form</field>
+        <field name="model">audit.backup</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_clean_schema" string="Limpiar schema temporal"
+                            type="object"
+                            attrs="{'invisible': [('state', 'not in', ['ready'])]}"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="pending,processing,ready,cleaned"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Archivo">
+                            <field name="backup_filename" readonly="1"/>
+                            <field name="backup_format" readonly="1"/>
+                            <field name="file_size_mb" readonly="1" string="Tamaño (MB)"/>
+                            <field name="processed_date" readonly="1"/>
+                        </group>
+                        <group string="Schema temporal">
+                            <field name="schema_name" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ── Tree ── -->
+    <record id="view_audit_backup_tree" model="ir.ui.view">
+        <field name="name">audit.backup.tree</field>
+        <field name="model">audit.backup</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="backup_filename"/>
+                <field name="backup_format"/>
+                <field name="file_size_mb"/>
+                <field name="processed_date"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'pending'"
+                       decoration-warning="state == 'processing'"
+                       decoration-success="state == 'ready'"
+                       decoration-muted="state == 'cleaned'"
+                       decoration-danger="state == 'error'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ── Action ── -->
+    <record id="action_audit_backup" model="ir.actions.act_window">
+        <field name="name">Backups procesados</field>
+        <field name="res_model">audit.backup</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</data>
+</odoo>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree view -->
+    <record id="view_migration_log_tree" model="ir.ui.view">
+        <field name="name">migration.log.tree</field>
+        <field name="model">migration.log</field>
+        <field name="arch" type="xml">
+            <tree decoration-danger="log_type == 'error'"
+                  decoration-warning="log_type == 'warning'"
+                  decoration-success="log_type == 'info'">
+                <field name="execution_date"/>
+                <field name="log_type" widget="badge"
+                       decoration-danger="log_type == 'error'"
+                       decoration-warning="log_type == 'warning'"
+                       decoration-success="log_type == 'info'"/>
+                <field name="dry_run"/>
+                <field name="job_id"/>
+                <field name="source_model"/>
+                <field name="source_record_id_int" string="ID origen"/>
+                <field name="field_name"/>
+                <field name="rule_name"/>
+                <field name="message"/>
+                <field name="was_rollback"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form view -->
+    <record id="view_migration_log_form" model="ir.ui.view">
+        <field name="name">migration.log.form</field>
+        <field name="model">migration.log</field>
+        <field name="arch" type="xml">
+            <form string="Log de migración">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="execution_run_id"/>
+                            <field name="job_id"/>
+                            <field name="execution_date"/>
+                            <field name="log_type" widget="badge"
+                                   decoration-danger="log_type == 'error'"
+                                   decoration-warning="log_type == 'warning'"
+                                   decoration-success="log_type == 'info'"/>
+                        </group>
+                        <group>
+                            <field name="source_model"/>
+                            <field name="source_record_id_int" string="ID origen"/>
+                            <field name="field_name"/>
+                            <field name="rule_name"/>
+                            <field name="was_rollback"/>
+                            <field name="dry_run"/>
+                        </group>
+                    </group>
+                    <group string="Mensaje">
+                        <field name="message" nolabel="1"/>
+                    </group>
+                    <group string="Traceback" attrs="{'invisible': [('traceback', '=', False)]}">
+                        <field name="traceback" nolabel="1"
+                               style="font-family: monospace; white-space: pre-wrap; font-size: 12px;"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search view -->
+    <record id="view_migration_log_search" model="ir.ui.view">
+        <field name="name">migration.log.search</field>
+        <field name="model">migration.log</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="job_id"/>
+                <field name="source_model"/>
+                <field name="message"/>
+                <filter name="filter_error" string="Solo errores" domain="[('log_type', '=', 'error')]"/>
+                <filter name="filter_warning" string="Solo warnings" domain="[('log_type', '=', 'warning')]"/>
+                <filter name="filter_info" string="Solo info" domain="[('log_type', '=', 'info')]"/>
+                <separator/>
+                <filter name="filter_rollback" string="Con rollback" domain="[('was_rollback', '=', True)]"/>
+                <filter name="filter_dry_run" string="Dry Run" domain="[('dry_run', '=', True)]"/>
+                <filter name="filter_today" string="Hoy"
+                        domain="[('execution_date', '>=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter name="group_log_type" string="Tipo" context="{'group_by': 'log_type'}"/>
+                    <filter name="group_job" string="Trabajo" context="{'group_by': 'job_id'}"/>
+                    <filter name="group_run" string="Ejecución" context="{'group_by': 'execution_run_id'}"/>
+                    <filter name="group_model" string="Modelo origen" context="{'group_by': 'source_model'}"/>
+                    <filter name="group_date" string="Fecha" context="{'group_by': 'execution_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_migration_log_all" model="ir.actions.act_window">
+        <field name="name">Logs de migración</field>
+        <field name="res_model">migration.log</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_filter_error': 0}</field>
+    </record>
+</odoo>

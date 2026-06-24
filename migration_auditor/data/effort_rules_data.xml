@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Las reglas de esfuerzo se gestionan como constantes en el wizard
+         para mantener la lógica centralizada. Este archivo define parámetros
+         globales que pueden usarse para ajustar los valores por defecto. -->
+    <data noupdate="1">
+
+        <record id="param_effort_studio_field_hours" model="ir.config_parameter">
+            <field name="key">migration_auditor.effort.studio_field_hours</field>
+            <field name="value">1.0</field>
+        </record>
+
+        <record id="param_effort_custom_field_hours" model="ir.config_parameter">
+            <field name="key">migration_auditor.effort.custom_field_hours</field>
+            <field name="value">2.0</field>
+        </record>
+
+        <record id="param_effort_custom_model_base" model="ir.config_parameter">
+            <field name="key">migration_auditor.effort.custom_model_base_hours</field>
+            <field name="value">16.0</field>
+        </record>
+
+        <record id="param_effort_custom_module_hours" model="ir.config_parameter">
+            <field name="key">migration_auditor.effort.custom_module_avg_hours</field>
+            <field name="value">14.0</field>
+        </record>
+
+        <record id="param_effort_oca_module_hours" model="ir.config_parameter">
+            <field name="key">migration_auditor.effort.oca_module_avg_hours</field>
+            <field name="value">3.0</field>
+        </record>
+
+        <record id="param_effort_contingency_pct" model="ir.config_parameter">
+            <field name="key">migration_auditor.effort.contingency_pct</field>
+            <field name="value">0.10</field>
+        </record>
+
+    </data>
+</odoo>

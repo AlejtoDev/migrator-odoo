@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form view -->
+    <record id="view_instance_module_status_form" model="ir.ui.view">
+        <field name="name">instance.module.status.form</field>
+        <field name="model">instance.module.status</field>
+        <field name="arch" type="xml">
+            <form string="Módulo instalado">
+                <sheet>
+                    <group>
+                        <group string="Identificación">
+                            <field name="name"/>
+                            <field name="display_name_module"/>
+                            <field name="module_category" widget="badge"
+                                   decoration-info="module_category == 'custom'"
+                                   decoration-warning="module_category == 'oca'"
+                                   decoration-danger="module_category == 'enterprise'"
+                                   decoration-success="module_category == 'odoo_official'"/>
+                            <field name="version"/>
+                            <field name="author"/>
+                        </group>
+                        <group string="Estado">
+                            <field name="state"/>
+                            <field name="last_scanned"/>
+                            <field name="is_relevant_for_migration"/>
+                        </group>
+                    </group>
+                    <field name="notes" placeholder="Notas del consultor sobre este módulo..."/>
+                    <notebook>
+                        <page string="Dependencias">
+                            <field name="dependency_ids" readonly="1">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="display_name_module"/>
+                                    <field name="module_category"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree view -->
+    <record id="view_instance_module_status_tree" model="ir.ui.view">
+        <field name="name">instance.module.status.tree</field>
+        <field name="model">instance.module.status</field>
+        <field name="arch" type="xml">
+            <tree decoration-info="module_category == 'custom'"
+                  decoration-warning="module_category == 'oca'"
+                  decoration-muted="module_category == 'odoo_official'">
+                <field name="display_name_module" string="Nombre"/>
+                <field name="name" string="Técnico"/>
+                <field name="module_category" widget="badge"
+                       decoration-info="module_category == 'custom'"
+                       decoration-warning="module_category == 'oca'"
+                       decoration-danger="module_category == 'enterprise'"
+                       decoration-success="module_category == 'odoo_official'"/>
+                <field name="state"/>
+                <field name="version"/>
+                <field name="is_relevant_for_migration"/>
+                <field name="last_scanned"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search view -->
+    <record id="view_instance_module_status_search" model="ir.ui.view">
+        <field name="name">instance.module.status.search</field>
+        <field name="model">instance.module.status</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="display_name_module"/>
+                <field name="author"/>
+                <filter name="filter_custom" string="Solo custom"
+                        domain="[('module_category', '=', 'custom')]"/>
+                <filter name="filter_oca" string="Solo OCA"
+                        domain="[('module_category', '=', 'oca')]"/>
+                <filter name="filter_enterprise" string="Solo Enterprise"
+                        domain="[('module_category', '=', 'enterprise')]"/>
+                <filter name="filter_relevant" string="Relevantes para migración"
+                        domain="[('is_relevant_for_migration', '=', True)]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter name="group_category" string="Categoría"
+                            context="{'group_by': 'module_category'}"/>
+                    <filter name="group_state" string="Estado"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Wizard de refresco de snapshot -->
+    <record id="view_snapshot_refresh_wizard_form" model="ir.ui.view">
+        <field name="name">snapshot.refresh.wizard.form</field>
+        <field name="model">snapshot.refresh.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Refrescar snapshot de instancia">
+                <sheet>
+                    <group>
+                        <field name="refresh_modules"/>
+                        <field name="refresh_studio_fields"/>
+                    </group>
+                    <group attrs="{'invisible': [('scan_done', '=', False)]}">
+                        <separator string="Resultado del escaneo"/>
+                        <field name="modules_found" readonly="1"/>
+                        <field name="studio_fields_found" readonly="1"/>
+                    </group>
+                    <field name="scan_done" invisible="1"/>
+                </sheet>
+                <footer>
+                    <button name="action_refresh" string="Escanear ahora" type="object"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('scan_done', '=', True)]}"/>
+                    <button string="Cerrar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_instance_module_status" model="ir.actions.act_window">
+        <field name="name">Módulos instalados</field>
+        <field name="res_model">instance.module.status</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_filter_relevant': 0}</field>
+    </record>
+
+    <record id="action_snapshot_refresh_wizard" model="ir.actions.act_window">
+        <field name="name">Refrescar snapshot</field>
+        <field name="res_model">snapshot.refresh.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

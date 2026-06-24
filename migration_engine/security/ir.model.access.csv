@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_migration_job_mgr,migration.job manager,model_migration_job,group_migration_manager,1,1,1,1
+access_migration_job_usr,migration.job user,model_migration_job,group_migration_user,1,0,0,0
+access_migration_exec_run_mgr,migration.execution.run manager,model_migration_execution_run,group_migration_manager,1,1,1,1
+access_migration_exec_run_usr,migration.execution.run user,model_migration_execution_run,group_migration_user,1,0,0,0
+access_migration_field_map_mgr,migration.field.map manager,model_migration_field_map,group_migration_manager,1,1,1,1
+access_migration_rule_mgr,migration.rule manager,model_migration_rule,group_migration_manager,1,1,1,1
+access_migration_log_mgr,migration.log manager,model_migration_log,group_migration_manager,1,1,1,1
+access_migration_log_usr,migration.log user,model_migration_log,group_migration_user,1,0,0,0
+access_run_wizard_mgr,run.migration.wizard manager,model_run_migration_wizard,group_migration_manager,1,1,1,1
+access_snapshot_wizard_mgr,snapshot.refresh.wizard manager,model_snapshot_refresh_wizard,group_migration_manager,1,1,1,1
+access_instance_module_mgr,instance.module.status manager,model_instance_module_status,group_migration_manager,1,1,1,1
+access_instance_module_usr,instance.module.status user,model_instance_module_status,group_migration_user,1,0,0,0
+access_instance_studio_mgr,instance.studio.field manager,model_instance_studio_field,group_migration_manager,1,1,1,1
+access_instance_studio_usr,instance.studio.field user,model_instance_studio_field,group_migration_user,1,0,0,0

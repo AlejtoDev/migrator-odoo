@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Raíz -->
+        <menuitem id="menu_migration_root"
+                  name="Migration Engine"
+                  sequence="80"/>
+
+        <!-- ── Bloque A: ETL ── -->
+        <menuitem id="menu_migration_jobs"
+                  name="Trabajos de Migración"
+                  parent="menu_migration_root"
+                  action="action_migration_job"
+                  sequence="10"/>
+
+        <menuitem id="menu_migration_runs"
+                  name="Historial de Ejecuciones"
+                  parent="menu_migration_root"
+                  action="action_migration_execution_run_all"
+                  sequence="11"/>
+
+        <menuitem id="menu_migration_logs"
+                  name="Logs"
+                  parent="menu_migration_root"
+                  action="action_migration_log_all"
+                  sequence="12"/>
+
+        <!-- ── Bloque B: Instance Snapshot ── -->
+        <menuitem id="menu_instance_modules"
+                  name="Módulos Instalados"
+                  parent="menu_migration_root"
+                  action="action_instance_module_status"
+                  sequence="30"/>
+
+        <menuitem id="menu_instance_studio_fields"
+                  name="Campos Studio"
+                  parent="menu_migration_root"
+                  action="action_instance_studio_field"
+                  sequence="31"/>
+
+        <menuitem id="menu_snapshot_refresh"
+                  name="Refrescar Snapshot"
+                  parent="menu_migration_root"
+                  action="action_snapshot_refresh_wizard"
+                  sequence="32"/>
+    </data>
+</odoo>

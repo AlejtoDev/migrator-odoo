@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form view -->
+    <record id="view_migration_execution_run_form" model="ir.ui.view">
+        <field name="name">migration.execution.run.form</field>
+        <field name="model">migration.execution.run</field>
+        <field name="arch" type="xml">
+            <form string="Ejecución de migración">
+                <header>
+                    <button name="action_export_logs_csv" string="Exportar logs CSV"
+                            type="object" icon="fa-download"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="running,done,partial,error"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" icon="fa-check-circle"
+                                attrs="{'invisible': [('success_count', '=', 0)]}">
+                            <field name="success_count" widget="statinfo" string="OK"/>
+                        </button>
+                        <button class="oe_stat_button" icon="fa-exclamation-triangle"
+                                attrs="{'invisible': [('warning_count', '=', 0)]}">
+                            <field name="warning_count" widget="statinfo" string="Warnings"/>
+                        </button>
+                        <button class="oe_stat_button" icon="fa-times-circle"
+                                attrs="{'invisible': [('error_count', '=', 0)]}">
+                            <field name="error_count" widget="statinfo" string="Errores"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="job_id"/>
+                            <field name="dry_run"/>
+                        </group>
+                        <group>
+                            <field name="execution_date"/>
+                            <field name="end_date"/>
+                            <field name="duration_seconds" string="Duración (seg)"/>
+                            <field name="total_records"/>
+                        </group>
+                    </group>
+                    <field name="log_ids" readonly="1">
+                        <tree decoration-danger="log_type == 'error'"
+                              decoration-warning="log_type == 'warning'"
+                              decoration-success="log_type == 'info'">
+                            <field name="execution_date"/>
+                            <field name="log_type" widget="badge"
+                                   decoration-danger="log_type == 'error'"
+                                   decoration-warning="log_type == 'warning'"
+                                   decoration-success="log_type == 'info'"/>
+                            <field name="source_model"/>
+                            <field name="source_record_id_int" string="ID origen"/>
+                            <field name="field_name"/>
+                            <field name="rule_name"/>
+                            <field name="message"/>
+                            <field name="was_rollback"/>
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree view -->
+    <record id="view_migration_execution_run_tree" model="ir.ui.view">
+        <field name="name">migration.execution.run.tree</field>
+        <field name="model">migration.execution.run</field>
+        <field name="arch" type="xml">
+            <tree decoration-danger="state == 'error'"
+                  decoration-warning="state == 'partial'"
+                  decoration-success="state == 'done'"
+                  decoration-info="state == 'running'">
+                <field name="name"/>
+                <field name="job_id"/>
+                <field name="execution_date"/>
+                <field name="duration_seconds" string="Duración (seg)"/>
+                <field name="dry_run"/>
+                <field name="state" widget="badge"
+                       decoration-danger="state == 'error'"
+                       decoration-warning="state == 'partial'"
+                       decoration-success="state == 'done'"
+                       decoration-info="state == 'running'"/>
+                <field name="total_records"/>
+                <field name="success_count"/>
+                <field name="warning_count"/>
+                <field name="error_count"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search view -->
+    <record id="view_migration_execution_run_search" model="ir.ui.view">
+        <field name="name">migration.execution.run.search</field>
+        <field name="model">migration.execution.run</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="job_id"/>
+                <filter name="filter_dry_run" string="Solo Dry Run" domain="[('dry_run', '=', True)]"/>
+                <filter name="filter_real" string="Solo ejecuciones reales" domain="[('dry_run', '=', False)]"/>
+                <filter name="filter_errors" string="Con errores" domain="[('error_count', '>', 0)]"/>
+                <filter name="filter_today" string="Hoy"
+                        domain="[('execution_date', '>=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter name="group_job" string="Trabajo" context="{'group_by': 'job_id'}"/>
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    <filter name="group_dry_run" string="Dry Run" context="{'group_by': 'dry_run'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_migration_execution_run_all" model="ir.actions.act_window">
+        <field name="name">Historial de ejecuciones</field>
+        <field name="res_model">migration.execution.run</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

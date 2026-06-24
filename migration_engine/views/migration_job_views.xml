@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form view -->
+    <record id="view_migration_job_form" model="ir.ui.view">
+        <field name="name">migration.job.form</field>
+        <field name="model">migration.job</field>
+        <field name="arch" type="xml">
+            <form string="Trabajo de migración">
+                <header>
+                    <button name="action_run" string="Ejecutar / Dry Run"
+                            type="object" class="oe_highlight"
+                            attrs="{'invisible': [('state', '=', 'running')]}"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,running,done,partial,error"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_runs" type="object"
+                                class="oe_stat_button" icon="fa-history">
+                            <field name="total_runs" widget="statinfo" string="Ejecuciones"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Nombre del trabajo"/></h1>
+                    </div>
+                    <group>
+                        <group string="Origen / Destino">
+                            <field name="source_model_id"/>
+                            <field name="dest_model_id"/>
+                            <field name="mode"/>
+                        </group>
+                        <group string="Configuración">
+                            <field name="domain" widget="domain"
+                                   options="{'model': 'source_model_id'}"/>
+                            <field name="key_field_ids"
+                                   domain="[('model_id', '=', source_model_id)]"
+                                   widget="many2many_tags"
+                                   attrs="{'invisible': [('mode', '=', 'create_only')],
+                                           'required': [('mode', 'in', ['update_only', 'create_or_update'])]}"/>
+                            <field name="last_run"/>
+                        </group>
+                    </group>
+                    <field name="notes" placeholder="Notas internas..."/>
+                    <notebook>
+                        <page string="Mapeo de campos" name="field_maps">
+                            <field name="field_map_ids" context="{'default_job_id': active_id}">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="source_field_id"
+                                           domain="[('model_id', '=', parent.source_model_id)]"/>
+                                    <field name="dest_field_id"
+                                           domain="[('model_id', '=', parent.dest_model_id)]"/>
+                                    <field name="transform_type"/>
+                                    <field name="fixed_value"
+                                           attrs="{'invisible': [('transform_type', '!=', 'fixed_value')],
+                                                   'required': [('transform_type', '=', 'fixed_value')]}"/>
+                                    <field name="python_expr"
+                                           attrs="{'invisible': [('transform_type', '!=', 'python_expr')],
+                                                   'required': [('transform_type', '=', 'python_expr')]}"/>
+                                    <field name="lookup_model_id"
+                                           attrs="{'invisible': [('transform_type', '!=', 'lookup')],
+                                                   'required': [('transform_type', '=', 'lookup')]}"/>
+                                    <field name="lookup_source_field_id"
+                                           attrs="{'invisible': [('transform_type', '!=', 'lookup')],
+                                                   'required': [('transform_type', '=', 'lookup')]}"/>
+                                    <field name="lookup_dest_field_id"
+                                           attrs="{'invisible': [('transform_type', '!=', 'lookup')],
+                                                   'required': [('transform_type', '=', 'lookup')]}"/>
+                                    <field name="required"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Reglas de validación" name="rules">
+                            <field name="rule_ids" context="{'default_job_id': active_id}">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="field_id"
+                                           domain="[('model_id', '=', parent.source_model_id)]"/>
+                                    <field name="rule_type"/>
+                                    <field name="regex_pattern"
+                                           attrs="{'invisible': [('rule_type', '!=', 'format_regex')],
+                                                   'required': [('rule_type', '=', 'format_regex')]}"/>
+                                    <field name="on_failure"/>
+                                    <field name="active"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree view -->
+    <record id="view_migration_job_tree" model="ir.ui.view">
+        <field name="name">migration.job.tree</field>
+        <field name="model">migration.job</field>
+        <field name="arch" type="xml">
+            <tree decoration-danger="state == 'error'"
+                  decoration-warning="state == 'partial'"
+                  decoration-success="state == 'done'"
+                  decoration-info="state == 'running'"
+                  decoration-muted="state == 'draft'">
+                <field name="name"/>
+                <field name="source_model_id"/>
+                <field name="dest_model_id"/>
+                <field name="mode"/>
+                <field name="state" widget="badge"
+                       decoration-danger="state == 'error'"
+                       decoration-warning="state == 'partial'"
+                       decoration-success="state == 'done'"
+                       decoration-info="state == 'running'"/>
+                <field name="last_run"/>
+                <field name="total_runs"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search view -->
+    <record id="view_migration_job_search" model="ir.ui.view">
+        <field name="name">migration.job.search</field>
+        <field name="model">migration.job</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="source_model_id"/>
+                <field name="dest_model_id"/>
+                <filter name="filter_draft" string="Borrador" domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_done" string="Completados" domain="[('state', '=', 'done')]"/>
+                <filter name="filter_issues" string="Con errores"
+                        domain="[('state', 'in', ['error', 'partial'])]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    <filter name="group_source" string="Modelo origen" context="{'group_by': 'source_model_id'}"/>
+                    <filter name="group_mode" string="Modo" context="{'group_by': 'mode'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Wizard de ejecución -->
+    <record id="view_run_migration_wizard_form" model="ir.ui.view">
+        <field name="name">run.migration.wizard.form</field>
+        <field name="model">run.migration.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Ejecutar migración">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="job_id" readonly="1"/>
+                            <field name="record_total" readonly="1" string="Registros a procesar"/>
+                        </group>
+                        <group>
+                            <field name="dry_run"/>
+                            <field name="confirm"
+                                   attrs="{'invisible': [('dry_run', '=', True)],
+                                           'required': [('dry_run', '=', False)]}"/>
+                        </group>
+                    </group>
+                    <separator string="Vista previa de datos (primeros 10 registros del modelo origen)"/>
+                    <field name="preview_html" readonly="1" widget="html" nolabel="1"/>
+                </sheet>
+                <footer>
+                    <button name="action_execute" string="Ejecutar" type="object"
+                            class="oe_highlight"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_migration_job" model="ir.actions.act_window">
+        <field name="name">Trabajos de migración</field>
+        <field name="res_model">migration.job</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

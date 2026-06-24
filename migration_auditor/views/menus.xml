@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!-- ── Root ── -->
+    <menuitem id="menu_migration_auditor_root"
+              name="Migration Auditor"
+              sequence="52"
+              web_icon="migration_auditor,static/description/icon.png"
+              groups="migration_auditor.group_auditor_user"/>
+
+    <!-- ── Proyectos ── -->
+    <menuitem id="menu_audit_project"
+              name="Proyectos de Auditoría"
+              parent="menu_migration_auditor_root"
+              action="action_audit_project"
+              sequence="10"
+              groups="migration_auditor.group_auditor_user"/>
+
+    <!-- ── Conexiones XML-RPC ── -->
+    <menuitem id="menu_audit_connection"
+              name="Conexiones XML-RPC"
+              parent="menu_migration_auditor_root"
+              action="action_audit_connection"
+              sequence="20"
+              groups="migration_auditor.group_auditor_user"/>
+
+</data>
+</odoo>

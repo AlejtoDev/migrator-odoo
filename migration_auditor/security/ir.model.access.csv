@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_audit_project,access_audit_project,model_audit_project,group_auditor_user,1,1,1,1
+access_audit_connection,access_audit_connection,model_audit_connection,group_auditor_user,1,1,1,1
+access_audit_backup,access_audit_backup,model_audit_backup,group_auditor_user,1,1,1,1
+access_audit_module_finding,access_audit_module_finding,model_audit_module_finding,group_auditor_user,1,1,1,1
+access_audit_field_finding,access_audit_field_finding,model_audit_field_finding,group_auditor_user,1,1,1,1
+access_audit_model_finding,access_audit_model_finding,model_audit_model_finding,group_auditor_user,1,1,1,1
+access_audit_volume_finding,access_audit_volume_finding,model_audit_volume_finding,group_auditor_user,1,1,1,1
+access_audit_effort_line,access_audit_effort_line,model_audit_effort_line,group_auditor_user,1,1,1,1
+access_run_audit_wizard,access_run_audit_wizard,model_run_audit_wizard,group_auditor_user,1,1,1,1
+access_generate_report_wizard,access_generate_report_wizard,model_generate_report_wizard,group_auditor_user,1,1,1,1

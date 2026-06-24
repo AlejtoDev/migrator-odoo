@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!-- ── Form ── -->
+    <record id="view_audit_connection_form" model="ir.ui.view">
+        <field name="name">audit.connection.form</field>
+        <field name="model">audit.connection</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_test_connection" string="Probar Conexión"
+                            type="object" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Acceso">
+                            <field name="url" placeholder="https://cliente.odoo.com"/>
+                            <field name="database"/>
+                            <field name="username"/>
+                            <field name="password" password="True"/>
+                        </group>
+                        <group string="Último test">
+                            <field name="last_test_date" readonly="1"/>
+                            <field name="last_test_result" readonly="1"/>
+                            <field name="last_test_detail" readonly="1"/>
+                            <field name="odoo_version" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Notas">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ── Tree ── -->
+    <record id="view_audit_connection_tree" model="ir.ui.view">
+        <field name="name">audit.connection.tree</field>
+        <field name="model">audit.connection</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="url"/>
+                <field name="database"/>
+                <field name="username"/>
+                <field name="odoo_version"/>
+                <field name="last_test_date"/>
+                <field name="last_test_result" widget="badge"
+                       decoration-success="last_test_result == 'ok'"
+                       decoration-danger="last_test_result == 'error'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ── Action ── -->
+    <record id="action_audit_connection" model="ir.actions.act_window">
+        <field name="name">Conexiones XML-RPC</field>
+        <field name="res_model">audit.connection</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Añade las credenciales del cliente para conectarte por XML-RPC
+            </p>
+        </field>
+    </record>
+
+</data>
+</odoo>

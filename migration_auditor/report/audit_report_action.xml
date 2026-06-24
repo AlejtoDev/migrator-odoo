@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="action_audit_report" model="ir.actions.report">
+            <field name="name">Informe de Auditoría de Migración</field>
+            <field name="model">audit.project</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">migration_auditor.report_audit_project</field>
+            <field name="report_file">migration_auditor.report_audit_project</field>
+            <field name="binding_model_id" ref="model_audit_project"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="base.paperformat_a4"/>
+        </record>
+
+    </data>
+</odoo>

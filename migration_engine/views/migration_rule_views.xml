@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form view (popup) -->
+    <record id="view_migration_rule_form" model="ir.ui.view">
+        <field name="name">migration.rule.form</field>
+        <field name="model">migration.rule</field>
+        <field name="arch" type="xml">
+            <form string="Regla de validación">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="field_id"/>
+                            <field name="rule_type"/>
+                            <field name="on_failure"/>
+                        </group>
+                    </group>
+                    <group attrs="{'invisible': [('rule_type', '!=', 'format_regex')]}">
+                        <field name="regex_pattern"/>
+                    </group>
+                    <group attrs="{'invisible': [('rule_type', '!=', 'python_expr')]}">
+                        <field name="python_expr" placeholder="Ej: len(str(value)) > 3"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree view editable inline -->
+    <record id="view_migration_rule_tree" model="ir.ui.view">
+        <field name="name">migration.rule.tree</field>
+        <field name="model">migration.rule</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="field_id" domain="[('model_id', '=', parent.source_model_id)]"/>
+                <field name="rule_type"/>
+                <field name="regex_pattern"
+                       attrs="{'invisible': [('rule_type', '!=', 'format_regex')],
+                               'required': [('rule_type', '=', 'format_regex')]}"/>
+                <field name="on_failure"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!-- ── Form ── -->
+    <record id="view_audit_project_form" model="ir.ui.view">
+        <field name="name">audit.project.form</field>
+        <field name="model">audit.project</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_run_audit" string="Iniciar Escaneo" type="object"
+                            class="btn-primary"
+                            attrs="{'invisible': [('state', 'not in', ['draft', 'error'])]}"/>
+                    <button name="action_generate_report" string="Generar Informe PDF" type="object"
+                            attrs="{'invisible': [('state', '!=', 'done')]}"/>
+                    <button name="action_reset_draft" string="Reiniciar" type="object"
+                            attrs="{'invisible': [('state', 'in', ['draft'])]}"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,scanning,done"/>
+                </header>
+
+                <sheet>
+                    <!-- Smart buttons -->
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_modules" icon="fa-cubes"
+                                attrs="{'invisible': [('module_count', '=', 0)]}">
+                            <field name="module_count" widget="statinfo" string="Módulos"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_fields" icon="fa-columns"
+                                attrs="{'invisible': [('field_count', '=', 0)]}">
+                            <field name="field_count" widget="statinfo" string="Campos custom"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_models" icon="fa-table"
+                                attrs="{'invisible': [('model_count', '=', 0)]}">
+                            <field name="model_count" widget="statinfo" string="Modelos custom"/>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+
+                    <group>
+                        <group string="Cliente">
+                            <field name="client_name"/>
+                            <field name="client_email"/>
+                            <field name="odoo_version_detected" readonly="1"/>
+                            <field name="is_enterprise" readonly="1"/>
+                        </group>
+                        <group string="Configuración de auditoría">
+                            <field name="audit_mode" widget="radio"/>
+                            <field name="connection_id"
+                                   attrs="{'invisible': [('audit_mode', '!=', 'xmlrpc')],
+                                           'required': [('audit_mode', '=', 'xmlrpc')]}"/>
+                            <field name="backup_id" readonly="1"
+                                   attrs="{'invisible': [('audit_mode', '!=', 'backup')]}"/>
+                            <field name="scan_date" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Presupuesto">
+                        <group>
+                            <field name="hourly_rate"/>
+                            <field name="currency_id"/>
+                        </group>
+                        <group>
+                            <field name="total_hours" readonly="1"/>
+                            <field name="total_cost" readonly="1"
+                                   widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Módulos instalados" name="modules">
+                            <field name="module_finding_ids" mode="tree" nolabel="1">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="display_name_module"/>
+                                    <field name="module_category" widget="badge"
+                                           decoration-success="module_category == 'odoo_official'"
+                                           decoration-info="module_category == 'oca'"
+                                           decoration-warning="module_category == 'enterprise'"
+                                           decoration-danger="module_category == 'custom'"/>
+                                    <field name="version"/>
+                                    <field name="compatibility_risk" widget="badge"
+                                           decoration-success="compatibility_risk == 'low'"
+                                           decoration-warning="compatibility_risk == 'medium'"
+                                           decoration-danger="compatibility_risk == 'high'"/>
+                                    <field name="is_relevant" widget="boolean_toggle"/>
+                                    <field name="effort_hours"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Campos custom" name="fields">
+                            <field name="field_finding_ids" mode="tree" nolabel="1">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="model_name"/>
+                                    <field name="field_type"/>
+                                    <field name="field_origin" widget="badge"
+                                           decoration-info="field_origin == 'studio'"
+                                           decoration-warning="field_origin == 'custom_dev'"
+                                           decoration-muted="field_origin == 'other_manual'"/>
+                                    <field name="has_data" widget="boolean_toggle"/>
+                                    <field name="record_count_with_value"/>
+                                    <field name="migration_decision"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Modelos custom" name="models">
+                            <field name="model_finding_ids" mode="tree" nolabel="1">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="description"/>
+                                    <field name="field_count"/>
+                                    <field name="record_count"/>
+                                    <field name="migration_decision"/>
+                                    <field name="effort_hours"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Volumen de datos" name="volume">
+                            <field name="volume_finding_ids" mode="tree" nolabel="1">
+                                <tree>
+                                    <field name="display_name"/>
+                                    <field name="record_count"/>
+                                    <field name="volume_tier" widget="badge"
+                                           decoration-success="volume_tier == 'low'"
+                                           decoration-warning="volume_tier == 'medium'"
+                                           decoration-danger="volume_tier == 'high'"/>
+                                    <field name="effort_extra_hours"/>
+                                    <field name="notes"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Estimación de horas" name="effort">
+                            <field name="effort_line_ids" mode="tree" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="category"/>
+                                    <field name="description"/>
+                                    <field name="source" readonly="1"/>
+                                    <field name="estimated_hours"/>
+                                    <field name="unit_price"/>
+                                    <field name="subtotal"/>
+                                    <field name="reference"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Resumen ejecutivo" name="summary">
+                            <field name="executive_summary" widget="html"/>
+                        </page>
+                        <page string="Notas internas" name="notes">
+                            <field name="consultant_notes" widget="html"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ── Tree ── -->
+    <record id="view_audit_project_tree" model="ir.ui.view">
+        <field name="name">audit.project.tree</field>
+        <field name="model">audit.project</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="client_name"/>
+                <field name="audit_mode"/>
+                <field name="odoo_version_detected"/>
+                <field name="scan_date"/>
+                <field name="total_hours"/>
+                <field name="total_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="state" widget="badge"
+                       decoration-secondary="state == 'draft'"
+                       decoration-warning="state == 'scanning'"
+                       decoration-success="state == 'done'"
+                       decoration-danger="state == 'error'"/>
+                <field name="currency_id" column_invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ── Search ── -->
+    <record id="view_audit_project_search" model="ir.ui.view">
+        <field name="name">audit.project.search</field>
+        <field name="model">audit.project</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="client_name"/>
+                <separator/>
+                <filter string="Borrador" name="draft" domain="[('state','=','draft')]"/>
+                <filter string="Completados" name="done" domain="[('state','=','done')]"/>
+                <filter string="Con error" name="error" domain="[('state','=','error')]"/>
+                <separator/>
+                <filter string="Modo XML-RPC" name="xmlrpc" domain="[('audit_mode','=','xmlrpc')]"/>
+                <filter string="Modo Backup" name="backup" domain="[('audit_mode','=','backup')]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter string="Estado" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Modo" name="group_mode" context="{'group_by': 'audit_mode'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ── Action ── -->
+    <record id="action_audit_project" model="ir.actions.act_window">
+        <field name="name">Proyectos de Auditoría</field>
+        <field name="res_model">audit.project</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_audit_project_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crea tu primer proyecto de auditoría
+            </p>
+        </field>
+    </record>
+
+</data>
+</odoo>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form view -->
+    <record id="view_instance_studio_field_form" model="ir.ui.view">
+        <field name="name">instance.studio.field.form</field>
+        <field name="model">instance.studio.field</field>
+        <field name="arch" type="xml">
+            <form string="Campo Studio">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_load_sample_values" type="object"
+                                string="Cargar muestra de valores"
+                                icon="fa-database"
+                                class="oe_stat_button"/>
+                    </div>
+                    <group>
+                        <group string="Identificación">
+                            <field name="name"/>
+                            <field name="field_description"/>
+                            <field name="model_id"/>
+                            <field name="field_type"/>
+                            <field name="last_scanned"/>
+                        </group>
+                        <group string="Impacto en migración">
+                            <field name="migration_impact" widget="priority"/>
+                        </group>
+                    </group>
+                    <separator string="Descripción para el cliente"/>
+                    <field name="client_description" nolabel="1"
+                           placeholder="Explica qué hace este campo en términos de negocio: para qué se usa, quién lo llena, qué impacto tiene..."/>
+                    <separator string="Notas técnicas de migración"/>
+                    <field name="migration_notes" nolabel="1"
+                           placeholder="Cómo manejar este campo en la migración: ¿se mantiene?, ¿se mapea a otro campo?, ¿se puede perder?..."/>
+                    <separator string="Muestra de valores actuales"
+                               attrs="{'invisible': [('sample_values', '=', False)]}"/>
+                    <field name="sample_values" readonly="1" nolabel="1"
+                           attrs="{'invisible': [('sample_values', '=', False)]}"
+                           style="font-family: monospace; white-space: pre-wrap;"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree view -->
+    <record id="view_instance_studio_field_tree" model="ir.ui.view">
+        <field name="name">instance.studio.field.tree</field>
+        <field name="model">instance.studio.field</field>
+        <field name="arch" type="xml">
+            <tree decoration-danger="migration_impact == '3'"
+                  decoration-warning="migration_impact == '2'">
+                <field name="model_id"/>
+                <field name="name"/>
+                <field name="field_description"/>
+                <field name="field_type"/>
+                <field name="migration_impact" widget="priority"/>
+                <field name="last_scanned"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search view -->
+    <record id="view_instance_studio_field_search" model="ir.ui.view">
+        <field name="name">instance.studio.field.search</field>
+        <field name="model">instance.studio.field</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="model_id"/>
+                <field name="field_description"/>
+                <filter name="filter_high_impact" string="Alto impacto"
+                        domain="[('migration_impact', '=', '3')]"/>
+                <filter name="filter_no_description" string="Sin descripción de cliente"
+                        domain="[('client_description', '=', False)]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter name="group_model" string="Modelo"
+                            context="{'group_by': 'model_id'}"/>
+                    <filter name="group_impact" string="Impacto"
+                            context="{'group_by': 'migration_impact'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_instance_studio_field" model="ir.actions.act_window">
+        <field name="name">Campos Studio</field>
+        <field name="res_model">instance.studio.field</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
