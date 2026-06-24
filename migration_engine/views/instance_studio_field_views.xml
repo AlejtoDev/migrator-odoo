@@ -32,9 +32,9 @@
                     <field name="migration_notes" nolabel="1"
                            placeholder="Cómo manejar este campo en la migración: ¿se mantiene?, ¿se mapea a otro campo?, ¿se puede perder?..."/>
                     <separator string="Muestra de valores actuales"
-                               attrs="{'invisible': [('sample_values', '=', False)]}"/>
+                               invisible="not sample_values"/>
                     <field name="sample_values" readonly="1" nolabel="1"
-                           attrs="{'invisible': [('sample_values', '=', False)]}"
+                           invisible="not sample_values"
                            style="font-family: monospace; white-space: pre-wrap;"/>
                 </sheet>
             </form>

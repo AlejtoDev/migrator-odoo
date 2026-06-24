@@ -11,14 +11,14 @@
                 <header>
                     <button name="action_run_audit" string="Iniciar Escaneo" type="object"
                             class="btn-primary"
-                            attrs="{'invisible': [('state', 'not in', ['draft', 'error'])]}"/>
+                            invisible="state not in ('draft', 'error')"/>
                     <button name="action_generate_report" string="Generar Informe PDF" type="object"
-                            attrs="{'invisible': [('state', '!=', 'done')]}"/>
+                            invisible="state != 'done'"/>
                     <button name="action_create_sale_order" string="Crear cotización" type="object"
                             icon="fa-file-text-o"
-                            attrs="{'invisible': [('state', '!=', 'done')]}"/>
+                            invisible="state != 'done'"/>
                     <button name="action_reset_draft" string="Reiniciar" type="object"
-                            attrs="{'invisible': [('state', 'in', ['draft'])]}"/>
+                            invisible="state == 'draft'"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,scanning,done"/>
                 </header>

@@ -11,7 +11,7 @@
                 <header>
                     <button name="action_clean_schema" string="Limpiar schema temporal"
                             type="object"
-                            attrs="{'invisible': [('state', 'not in', ['ready'])]}"/>
+                            invisible="state != 'ready'"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="pending,processing,ready,cleaned"/>
                 </header>

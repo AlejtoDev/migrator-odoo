@@ -18,9 +18,9 @@
                     </group>
 
                     <group string="Subir backup"
-                          attrs="{'invisible': [('audit_mode', '!=', 'backup')]}">
+                          invisible="audit_mode != 'backup'">
                         <field name="backup_file" widget="binary" filename="backup_filename"
-                               attrs="{'required': [('audit_mode', '=', 'backup')]}"/>
+                               required="audit_mode == 'backup'"/>
                         <field name="backup_filename" invisible="1"/>
                     </group>
 
@@ -37,7 +37,7 @@
                     </group>
 
                     <group string="Resultado del escaneo"
-                          attrs="{'invisible': [('scan_done', '=', False)]}">
+                          invisible="not scan_done">
                         <field name="scan_log" nolabel="1" readonly="1"
                                style="font-family: monospace; font-size: 12px;"/>
                     </group>
@@ -45,7 +45,7 @@
                 <footer>
                     <button name="action_scan" string="Iniciar escaneo" type="object"
                             class="btn-primary"
-                            attrs="{'invisible': [('scan_done', '=', True)]}"/>
+                            invisible="scan_done"/>
                     <button string="Cerrar" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>

@@ -9,7 +9,7 @@
                 <header>
                     <button name="action_run" string="Ejecutar / Dry Run"
                             type="object" class="oe_highlight"
-                            attrs="{'invisible': [('state', '=', 'running')]}"/>
+                            invisible="state == 'running'"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,running,done,partial,error"/>
                 </header>
@@ -36,8 +36,8 @@
                             <field name="key_field_ids"
                                    domain="[('model_id', '=', source_model_id)]"
                                    widget="many2many_tags"
-                                   attrs="{'invisible': [('mode', '=', 'create_only')],
-                                           'required': [('mode', 'in', ['update_only', 'create_or_update'])]}"/>
+                                   invisible="mode == 'create_only'"
+                                   required="mode in ('update_only', 'create_or_update')"/>
                             <field name="last_run"/>
                         </group>
                     </group>
@@ -53,20 +53,20 @@
                                            domain="[('model_id', '=', parent.dest_model_id)]"/>
                                     <field name="transform_type"/>
                                     <field name="fixed_value"
-                                           attrs="{'invisible': [('transform_type', '!=', 'fixed_value')],
-                                                   'required': [('transform_type', '=', 'fixed_value')]}"/>
+                                           invisible="transform_type != 'fixed_value'"
+                                           required="transform_type == 'fixed_value'"/>
                                     <field name="python_expr"
-                                           attrs="{'invisible': [('transform_type', '!=', 'python_expr')],
-                                                   'required': [('transform_type', '=', 'python_expr')]}"/>
+                                           invisible="transform_type != 'python_expr'"
+                                           required="transform_type == 'python_expr'"/>
                                     <field name="lookup_model_id"
-                                           attrs="{'invisible': [('transform_type', '!=', 'lookup')],
-                                                   'required': [('transform_type', '=', 'lookup')]}"/>
+                                           invisible="transform_type != 'lookup'"
+                                           required="transform_type == 'lookup'"/>
                                     <field name="lookup_source_field_id"
-                                           attrs="{'invisible': [('transform_type', '!=', 'lookup')],
-                                                   'required': [('transform_type', '=', 'lookup')]}"/>
+                                           invisible="transform_type != 'lookup'"
+                                           required="transform_type == 'lookup'"/>
                                     <field name="lookup_dest_field_id"
-                                           attrs="{'invisible': [('transform_type', '!=', 'lookup')],
-                                                   'required': [('transform_type', '=', 'lookup')]}"/>
+                                           invisible="transform_type != 'lookup'"
+                                           required="transform_type == 'lookup'"/>
                                     <field name="required"/>
                                 </tree>
                             </field>
@@ -80,8 +80,8 @@
                                            domain="[('model_id', '=', parent.source_model_id)]"/>
                                     <field name="rule_type"/>
                                     <field name="regex_pattern"
-                                           attrs="{'invisible': [('rule_type', '!=', 'format_regex')],
-                                                   'required': [('rule_type', '=', 'format_regex')]}"/>
+                                           invisible="rule_type != 'format_regex'"
+                                           required="rule_type == 'format_regex'"/>
                                     <field name="on_failure"/>
                                     <field name="active"/>
                                 </tree>
@@ -89,7 +89,6 @@
                         </page>
                     </notebook>
                 </sheet>
-                <chatter/>
             </form>
         </field>
     </record>
@@ -156,8 +155,8 @@
                         <group>
                             <field name="dry_run"/>
                             <field name="confirm"
-                                   attrs="{'invisible': [('dry_run', '=', True)],
-                                           'required': [('dry_run', '=', False)]}"/>
+                                   invisible="dry_run == True"
+                                   required="dry_run == False"/>
                         </group>
                     </group>
                     <separator string="Vista previa de datos (primeros 10 registros del modelo origen)"/>

@@ -104,7 +104,7 @@
                         <field name="refresh_modules"/>
                         <field name="refresh_studio_fields"/>
                     </group>
-                    <group attrs="{'invisible': [('scan_done', '=', False)]}">
+                    <group invisible="not scan_done">
                         <separator string="Resultado del escaneo"/>
                         <field name="modules_found" readonly="1"/>
                         <field name="studio_fields_found" readonly="1"/>
@@ -114,7 +114,7 @@
                 <footer>
                     <button name="action_refresh" string="Escanear ahora" type="object"
                             class="oe_highlight"
-                            attrs="{'invisible': [('scan_done', '=', True)]}"/>
+                            invisible="scan_done"/>
                     <button string="Cerrar" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
