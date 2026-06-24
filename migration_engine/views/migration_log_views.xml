@@ -80,7 +80,7 @@
                 <filter name="filter_dry_run" string="Dry Run" domain="[('dry_run', '=', True)]"/>
                 <filter name="filter_today" string="Hoy"
                         domain="[('execution_date', '>=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
-                <group expand="0" string="Agrupar por">
+                <group>
                     <filter name="group_log_type" string="Tipo" context="{'group_by': 'log_type'}"/>
                     <filter name="group_job" string="Trabajo" context="{'group_by': 'job_id'}"/>
                     <filter name="group_run" string="Ejecución" context="{'group_by': 'execution_run_id'}"/>

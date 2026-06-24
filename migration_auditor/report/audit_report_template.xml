@@ -10,7 +10,7 @@
                     <div class="row mb-4">
                         <div class="col-12">
                             <h1 class="text-center">Informe de Auditoría de Migración</h1>
-                            <h3 class="text-center text-muted"><t t-esc="doc.name"/></h3>
+                            <h3 class="text-center text-muted"><t t-out="doc.name"/></h3>
                         </div>
                     </div>
 
@@ -19,15 +19,15 @@
                         <tbody>
                             <tr>
                                 <td><strong>Cliente:</strong></td>
-                                <td><t t-esc="doc.client_name"/></td>
+                                <td><t t-out="doc.client_name"/></td>
                                 <td><strong>Fecha escaneo:</strong></td>
-                                <td><t t-esc="doc.scan_date and doc.scan_date.strftime('%d/%m/%Y %H:%M') or 'Pendiente'"/></td>
+                                <td><t t-out="doc.scan_date and doc.scan_date.strftime('%d/%m/%Y %H:%M') or 'Pendiente'"/></td>
                             </tr>
                             <tr>
                                 <td><strong>Versión Odoo origen:</strong></td>
-                                <td><t t-esc="doc.odoo_version_detected or 'Desconocida'"/></td>
+                                <td><t t-out="doc.odoo_version_detected or 'Desconocida'"/></td>
                                 <td><strong>Modo de auditoría:</strong></td>
-                                <td><t t-esc="dict(doc._fields['audit_mode'].selection).get(doc.audit_mode, doc.audit_mode)"/></td>
+                                <td><t t-out="dict(doc._fields['audit_mode'].selection).get(doc.audit_mode, doc.audit_mode)"/></td>
                             </tr>
                             <tr t-if="doc.is_enterprise">
                                 <td colspan="4"><strong>⚠ Instancia Enterprise detectada</strong></td>
@@ -43,7 +43,7 @@
 
                     <!-- Módulos instalados -->
                     <t t-if="doc.module_finding_ids">
-                        <h4>Inventario de Módulos (<t t-esc="len(doc.module_finding_ids)"/> total)</h4>
+                        <h4>Inventario de Módulos (<t t-out="len(doc.module_finding_ids)"/> total)</h4>
                         <table class="table table-sm table-bordered mb-4">
                             <thead >
                                 <tr>
@@ -57,11 +57,11 @@
                             <tbody>
                                 <t t-foreach="doc.module_finding_ids.filtered('is_relevant')" t-as="mod">
                                     <tr>
-                                        <td><t t-esc="mod.name"/></td>
-                                        <td><t t-esc="mod.display_name_module"/></td>
-                                        <td><t t-esc="dict(mod._fields['module_category'].selection).get(mod.module_category, '')"/></td>
-                                        <td><t t-esc="mod.version"/></td>
-                                        <td><t t-esc="dict(mod._fields['compatibility_risk'].selection).get(mod.compatibility_risk, '')"/></td>
+                                        <td><t t-out="mod.name"/></td>
+                                        <td><t t-out="mod.display_name_module"/></td>
+                                        <td><t t-out="dict(mod._fields['module_category'].selection).get(mod.module_category, '')"/></td>
+                                        <td><t t-out="mod.version"/></td>
+                                        <td><t t-out="dict(mod._fields['compatibility_risk'].selection).get(mod.compatibility_risk, '')"/></td>
                                     </tr>
                                 </t>
                             </tbody>
@@ -70,7 +70,7 @@
 
                     <!-- Campos custom / Studio -->
                     <t t-if="doc.field_finding_ids">
-                        <h4>Campos Custom y Studio (<t t-esc="len(doc.field_finding_ids)"/> total)</h4>
+                        <h4>Campos Custom y Studio (<t t-out="len(doc.field_finding_ids)"/> total)</h4>
                         <table class="table table-sm table-bordered mb-4">
                             <thead >
                                 <tr>
@@ -85,12 +85,12 @@
                             <tbody>
                                 <t t-foreach="doc.field_finding_ids" t-as="fld">
                                     <tr>
-                                        <td><t t-esc="fld.name"/></td>
-                                        <td><t t-esc="fld.model_name"/></td>
-                                        <td><t t-esc="fld.field_type"/></td>
-                                        <td><t t-esc="dict(fld._fields['field_origin'].selection).get(fld.field_origin, '')"/></td>
-                                        <td><t t-esc="fld.record_count_with_value"/></td>
-                                        <td><t t-esc="dict(fld._fields['migration_decision'].selection).get(fld.migration_decision, '')"/></td>
+                                        <td><t t-out="fld.name"/></td>
+                                        <td><t t-out="fld.model_name"/></td>
+                                        <td><t t-out="fld.field_type"/></td>
+                                        <td><t t-out="dict(fld._fields['field_origin'].selection).get(fld.field_origin, '')"/></td>
+                                        <td><t t-out="fld.record_count_with_value"/></td>
+                                        <td><t t-out="dict(fld._fields['migration_decision'].selection).get(fld.migration_decision, '')"/></td>
                                     </tr>
                                 </t>
                             </tbody>
@@ -99,7 +99,7 @@
 
                     <!-- Modelos custom -->
                     <t t-if="doc.model_finding_ids">
-                        <h4>Modelos Custom (<t t-esc="len(doc.model_finding_ids)"/> total)</h4>
+                        <h4>Modelos Custom (<t t-out="len(doc.model_finding_ids)"/> total)</h4>
                         <table class="table table-sm table-bordered mb-4">
                             <thead >
                                 <tr>
@@ -113,11 +113,11 @@
                             <tbody>
                                 <t t-foreach="doc.model_finding_ids" t-as="mdl">
                                     <tr>
-                                        <td><t t-esc="mdl.name"/></td>
-                                        <td><t t-esc="mdl.description"/></td>
-                                        <td><t t-esc="mdl.field_count"/></td>
-                                        <td><t t-esc="mdl.record_count"/></td>
-                                        <td><t t-esc="dict(mdl._fields['migration_decision'].selection).get(mdl.migration_decision, '')"/></td>
+                                        <td><t t-out="mdl.name"/></td>
+                                        <td><t t-out="mdl.description"/></td>
+                                        <td><t t-out="mdl.field_count"/></td>
+                                        <td><t t-out="mdl.record_count"/></td>
+                                        <td><t t-out="dict(mdl._fields['migration_decision'].selection).get(mdl.migration_decision, '')"/></td>
                                     </tr>
                                 </t>
                             </tbody>
@@ -139,10 +139,10 @@
                             <tbody>
                                 <t t-foreach="doc.volume_finding_ids" t-as="vol">
                                     <tr>
-                                        <td><t t-esc="vol.display_name"/></td>
-                                        <td><t t-esc="'{:,}'.format(vol.record_count)"/></td>
-                                        <td><t t-esc="dict(vol._fields['volume_tier'].selection).get(vol.volume_tier, '')"/></td>
-                                        <td><t t-esc="vol.effort_extra_hours"/></td>
+                                        <td><t t-out="vol.display_name"/></td>
+                                        <td><t t-out="'{:,}'.format(vol.record_count)"/></td>
+                                        <td><t t-out="dict(vol._fields['volume_tier'].selection).get(vol.volume_tier, '')"/></td>
+                                        <td><t t-out="vol.effort_extra_hours"/></td>
                                     </tr>
                                 </t>
                             </tbody>
@@ -164,24 +164,24 @@
                             <tbody>
                                 <t t-foreach="doc.effort_line_ids" t-as="line">
                                     <tr>
-                                        <td><t t-esc="dict(line._fields['category'].selection).get(line.category, '')"/></td>
-                                        <td><t t-esc="line.description"/></td>
-                                        <td class="text-end"><t t-esc="'%.1f' % line.estimated_hours"/></td>
-                                        <td class="text-end"><t t-esc="'%.2f' % line.subtotal"/> <t t-esc="doc.currency_id.symbol"/></td>
+                                        <td><t t-out="dict(line._fields['category'].selection).get(line.category, '')"/></td>
+                                        <td><t t-out="line.description"/></td>
+                                        <td class="text-end"><t t-out="'%.1f' % line.estimated_hours"/></td>
+                                        <td class="text-end"><t t-out="'%.2f' % line.subtotal"/> <t t-out="doc.currency_id.symbol"/></td>
                                     </tr>
                                 </t>
                             </tbody>
                             <tfoot>
                                 <tr class="fw-bold">
                                     <td colspan="2" class="text-end">TOTAL</td>
-                                    <td class="text-end"><t t-esc="'%.1f' % doc.total_hours"/> h</td>
-                                    <td class="text-end"><t t-esc="'%.2f' % doc.total_cost"/> <t t-esc="doc.currency_id.symbol"/></td>
+                                    <td class="text-end"><t t-out="'%.1f' % doc.total_hours"/> h</td>
+                                    <td class="text-end"><t t-out="'%.2f' % doc.total_cost"/> <t t-out="doc.currency_id.symbol"/></td>
                                 </tr>
                             </tfoot>
                         </table>
                         <p class="text-muted small">
-                            Tarifa horaria: <t t-esc="'%.2f' % doc.hourly_rate"/>
-                            <t t-esc="doc.currency_id.symbol"/>/hora
+                            Tarifa horaria: <t t-out="'%.2f' % doc.hourly_rate"/>
+                            <t t-out="doc.currency_id.symbol"/>/hora
                         </p>
                     </t>
 

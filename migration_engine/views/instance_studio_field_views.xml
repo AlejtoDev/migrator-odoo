@@ -71,7 +71,7 @@
                         domain="[('migration_impact', '=', '3')]"/>
                 <filter name="filter_no_description" string="Sin descripción de cliente"
                         domain="[('client_description', '=', False)]"/>
-                <group expand="0" string="Agrupar por">
+                <group>
                     <filter name="group_model" string="Modelo"
                             context="{'group_by': 'model_id'}"/>
                     <filter name="group_impact" string="Impacto"

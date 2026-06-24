@@ -131,7 +131,7 @@
                 <filter name="filter_done" string="Completados" domain="[('state', '=', 'done')]"/>
                 <filter name="filter_issues" string="Con errores"
                         domain="[('state', 'in', ['error', 'partial'])]"/>
-                <group expand="0" string="Agrupar por">
+                <group>
                     <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
                     <filter name="group_source" string="Modelo origen" context="{'group_by': 'source_model_id'}"/>
                     <filter name="group_mode" string="Modo" context="{'group_by': 'mode'}"/>

@@ -102,7 +102,7 @@
                 <filter name="filter_errors" string="Con errores" domain="[('error_count', '>', 0)]"/>
                 <filter name="filter_today" string="Hoy"
                         domain="[('execution_date', '>=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
-                <group expand="0" string="Agrupar por">
+                <group>
                     <filter name="group_job" string="Trabajo" context="{'group_by': 'job_id'}"/>
                     <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
                     <filter name="group_dry_run" string="Dry Run" context="{'group_by': 'dry_run'}"/>

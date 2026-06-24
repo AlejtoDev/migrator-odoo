@@ -83,7 +83,7 @@
                         domain="[('module_category', '=', 'enterprise')]"/>
                 <filter name="filter_relevant" string="Relevantes para migración"
                         domain="[('is_relevant_for_migration', '=', True)]"/>
-                <group expand="0" string="Agrupar por">
+                <group>
                     <filter name="group_category" string="Categoría"
                             context="{'group_by': 'module_category'}"/>
                     <filter name="group_state" string="Estado"

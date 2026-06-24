@@ -198,7 +198,7 @@ class AuditProject(models.Model):
             'type': 'ir.actions.act_window',
             'name': 'Cotizaciones',
             'res_model': 'sale.order',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('id', 'in', self.sale_order_ids.ids)],
             'context': {'default_partner_id': self.partner_id.id},
         }
@@ -209,7 +209,7 @@ class AuditProject(models.Model):
             'type': 'ir.actions.act_window',
             'name': 'Módulos detectados',
             'res_model': 'audit.module.finding',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('project_id', '=', self.id)],
         }
 
@@ -219,7 +219,7 @@ class AuditProject(models.Model):
             'type': 'ir.actions.act_window',
             'name': 'Campos custom detectados',
             'res_model': 'audit.field.finding',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('project_id', '=', self.id)],
         }
 
@@ -229,6 +229,6 @@ class AuditProject(models.Model):
             'type': 'ir.actions.act_window',
             'name': 'Modelos custom detectados',
             'res_model': 'audit.model.finding',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('project_id', '=', self.id)],
         }

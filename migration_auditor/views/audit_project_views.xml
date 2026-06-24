@@ -173,11 +173,7 @@
                         </page>
                     </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -220,7 +216,7 @@
                 <separator/>
                 <filter string="Modo XML-RPC" name="xmlrpc" domain="[('audit_mode','=','xmlrpc')]"/>
                 <filter string="Modo Backup" name="backup" domain="[('audit_mode','=','backup')]"/>
-                <group expand="0" string="Agrupar por">
+                <group>
                     <filter string="Estado" name="group_state" context="{'group_by': 'state'}"/>
                     <filter string="Modo" name="group_mode" context="{'group_by': 'audit_mode'}"/>
                 </group>

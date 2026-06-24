@@ -30,15 +30,15 @@ class AuditCategoryProduct(models.Model):
         required=True,
     )
 
-    _sql_constraints = [
-        ('category_unique', 'UNIQUE(category)',
-         'Ya existe un producto asignado para esta categoría.'),
-    ]
+    _category_unique = models.Constraint(
+        'UNIQUE(category)',
+        'Ya existe un producto asignado para esta categoría.',
+    )
 
     @api.constrains('product_id')
     def _check_product_type(self):
         for rec in self:
-            if rec.product_id and rec.product_id.type != 'service':
+            if rec.product_id and rec.product_id.detailed_type != 'service':
                 raise ValidationError(
                     f'El producto "{rec.product_id.name}" no es de tipo Servicio. '
                     'Solo se permiten productos de tipo Servicio para las líneas de auditoría.'
