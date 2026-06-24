@@ -40,7 +40,7 @@
         <field name="name">audit.backup.tree</field>
         <field name="model">audit.backup</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name"/>
                 <field name="backup_filename"/>
                 <field name="backup_format"/>
@@ -52,7 +52,7 @@
                        decoration-success="state == 'ready'"
                        decoration-muted="state == 'cleaned'"
                        decoration-danger="state == 'error'"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -60,7 +60,7 @@
     <record id="action_audit_backup" model="ir.actions.act_window">
         <field name="name">Backups procesados</field>
         <field name="res_model">audit.backup</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
 </data>

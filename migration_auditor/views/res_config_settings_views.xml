@@ -5,7 +5,7 @@
     <record id="res_config_settings_view_migration_auditor" model="ir.ui.view">
         <field name="name">res.config.settings.view.migration.auditor</field>
         <field name="model">res.config.settings</field>
-        <field name="inherit_id" ref="base_setup.action_general_configuration"/>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('settings')]" position="before">
                 <div class="app_settings_block"
@@ -57,7 +57,7 @@
                                         <label for="auditor_default_product_id"
                                                class="col-lg-4 o_light_label"/>
                                         <field name="auditor_default_product_id"
-                                               domain="[('type', '=', 'service')]"
+                                               domain="[('detailed_type', '=', 'service')]"
                                                class="col-lg-8"/>
                                     </div>
                                 </div>

@@ -38,14 +38,14 @@
                     <!-- Resumen ejecutivo -->
                     <t t-if="doc.executive_summary">
                         <h4>Resumen Ejecutivo</h4>
-                        <div class="mb-4"><t t-raw="doc.executive_summary"/></div>
+                        <div class="mb-4"><t t-out="doc.executive_summary"/></div>
                     </t>
 
                     <!-- Módulos instalados -->
                     <t t-if="doc.module_finding_ids">
                         <h4>Inventario de Módulos (<t t-esc="len(doc.module_finding_ids)"/> total)</h4>
                         <table class="table table-sm table-bordered mb-4">
-                            <thead class="thead-light">
+                            <thead >
                                 <tr>
                                     <th>Nombre técnico</th>
                                     <th>Nombre</th>
@@ -72,7 +72,7 @@
                     <t t-if="doc.field_finding_ids">
                         <h4>Campos Custom y Studio (<t t-esc="len(doc.field_finding_ids)"/> total)</h4>
                         <table class="table table-sm table-bordered mb-4">
-                            <thead class="thead-light">
+                            <thead >
                                 <tr>
                                     <th>Campo</th>
                                     <th>Modelo</th>
@@ -101,7 +101,7 @@
                     <t t-if="doc.model_finding_ids">
                         <h4>Modelos Custom (<t t-esc="len(doc.model_finding_ids)"/> total)</h4>
                         <table class="table table-sm table-bordered mb-4">
-                            <thead class="thead-light">
+                            <thead >
                                 <tr>
                                     <th>Modelo</th>
                                     <th>Descripción</th>
@@ -128,7 +128,7 @@
                     <t t-if="doc.volume_finding_ids">
                         <h4>Volumen de Datos</h4>
                         <table class="table table-sm table-bordered mb-4">
-                            <thead class="thead-light">
+                            <thead >
                                 <tr>
                                     <th>Modelo</th>
                                     <th>Registros</th>
@@ -153,12 +153,12 @@
                     <t t-if="doc.effort_line_ids">
                         <h4>Estimación de Horas y Presupuesto</h4>
                         <table class="table table-sm table-bordered mb-2">
-                            <thead class="thead-light">
+                            <thead >
                                 <tr>
                                     <th>Categoría</th>
                                     <th>Descripción</th>
-                                    <th class="text-right">Horas</th>
-                                    <th class="text-right">Subtotal</th>
+                                    <th class="text-end">Horas</th>
+                                    <th class="text-end">Subtotal</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -166,16 +166,16 @@
                                     <tr>
                                         <td><t t-esc="dict(line._fields['category'].selection).get(line.category, '')"/></td>
                                         <td><t t-esc="line.description"/></td>
-                                        <td class="text-right"><t t-esc="'%.1f' % line.estimated_hours"/></td>
-                                        <td class="text-right"><t t-esc="'%.2f' % line.subtotal"/> <t t-esc="doc.currency_id.symbol"/></td>
+                                        <td class="text-end"><t t-esc="'%.1f' % line.estimated_hours"/></td>
+                                        <td class="text-end"><t t-esc="'%.2f' % line.subtotal"/> <t t-esc="doc.currency_id.symbol"/></td>
                                     </tr>
                                 </t>
                             </tbody>
                             <tfoot>
-                                <tr class="font-weight-bold">
-                                    <td colspan="2" class="text-right">TOTAL</td>
-                                    <td class="text-right"><t t-esc="'%.1f' % doc.total_hours"/> h</td>
-                                    <td class="text-right"><t t-esc="'%.2f' % doc.total_cost"/> <t t-esc="doc.currency_id.symbol"/></td>
+                                <tr class="fw-bold">
+                                    <td colspan="2" class="text-end">TOTAL</td>
+                                    <td class="text-end"><t t-esc="'%.1f' % doc.total_hours"/> h</td>
+                                    <td class="text-end"><t t-esc="'%.2f' % doc.total_cost"/> <t t-esc="doc.currency_id.symbol"/></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -188,7 +188,7 @@
                     <!-- Notas del consultor -->
                     <t t-if="doc.consultant_notes">
                         <h4>Notas del Consultor</h4>
-                        <div class="mb-4"><t t-raw="doc.consultant_notes"/></div>
+                        <div class="mb-4"><t t-out="doc.consultant_notes"/></div>
                     </t>
 
                 </div>

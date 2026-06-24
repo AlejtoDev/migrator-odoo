@@ -36,7 +36,7 @@
         <field name="name">audit.module.finding.tree</field>
         <field name="model">audit.module.finding</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="project_id"/>
                 <field name="name"/>
                 <field name="display_name_module"/>
@@ -52,14 +52,14 @@
                        decoration-danger="compatibility_risk == 'high'"/>
                 <field name="is_relevant"/>
                 <field name="effort_hours"/>
-            </tree>
+            </list>
         </field>
     </record>
 
     <record id="action_audit_module_finding" model="ir.actions.act_window">
         <field name="name">Hallazgos: Módulos</field>
         <field name="res_model">audit.module.finding</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <!-- ═══════════════════════════════════════════════════════════
@@ -96,7 +96,7 @@
         <field name="name">audit.field.finding.tree</field>
         <field name="model">audit.field.finding</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="project_id"/>
                 <field name="name"/>
                 <field name="model_name"/>
@@ -108,14 +108,14 @@
                 <field name="has_data"/>
                 <field name="record_count_with_value"/>
                 <field name="migration_decision"/>
-            </tree>
+            </list>
         </field>
     </record>
 
     <record id="action_audit_field_finding" model="ir.actions.act_window">
         <field name="name">Hallazgos: Campos custom</field>
         <field name="res_model">audit.field.finding</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <!-- ═══════════════════════════════════════════════════════════
@@ -151,7 +151,7 @@
         <field name="name">audit.model.finding.tree</field>
         <field name="model">audit.model.finding</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="project_id"/>
                 <field name="name"/>
                 <field name="description"/>
@@ -160,14 +160,14 @@
                 <field name="has_menu"/>
                 <field name="migration_decision"/>
                 <field name="effort_hours"/>
-            </tree>
+            </list>
         </field>
     </record>
 
     <record id="action_audit_model_finding" model="ir.actions.act_window">
         <field name="name">Hallazgos: Modelos custom</field>
         <field name="res_model">audit.model.finding</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <!-- ═══════════════════════════════════════════════════════════
@@ -177,7 +177,7 @@
         <field name="name">audit.volume.finding.tree</field>
         <field name="model">audit.volume.finding</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="project_id"/>
                 <field name="display_name"/>
                 <field name="model_name"/>
@@ -188,14 +188,14 @@
                        decoration-danger="volume_tier == 'high'"/>
                 <field name="effort_extra_hours"/>
                 <field name="notes"/>
-            </tree>
+            </list>
         </field>
     </record>
 
     <record id="action_audit_volume_finding" model="ir.actions.act_window">
         <field name="name">Hallazgos: Volumen de datos</field>
         <field name="res_model">audit.volume.finding</field>
-        <field name="view_mode">tree</field>
+        <field name="view_mode">list</field>
     </record>
 
 </data>

@@ -29,12 +29,12 @@
                     <notebook>
                         <page string="Dependencias">
                             <field name="dependency_ids" readonly="1">
-                                <tree>
+                                <list>
                                     <field name="name"/>
                                     <field name="display_name_module"/>
                                     <field name="module_category"/>
                                     <field name="state"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
@@ -48,7 +48,7 @@
         <field name="name">instance.module.status.tree</field>
         <field name="model">instance.module.status</field>
         <field name="arch" type="xml">
-            <tree decoration-info="module_category == 'custom'"
+            <list decoration-info="module_category == 'custom'"
                   decoration-warning="module_category == 'oca'"
                   decoration-muted="module_category == 'odoo_official'">
                 <field name="display_name_module" string="Nombre"/>
@@ -62,7 +62,7 @@
                 <field name="version"/>
                 <field name="is_relevant_for_migration"/>
                 <field name="last_scanned"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -125,7 +125,7 @@
     <record id="action_instance_module_status" model="ir.actions.act_window">
         <field name="name">Módulos instalados</field>
         <field name="res_model">instance.module.status</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="context">{'search_default_filter_relevant': 0}</field>
     </record>
 

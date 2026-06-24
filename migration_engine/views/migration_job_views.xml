@@ -45,7 +45,7 @@
                     <notebook>
                         <page string="Mapeo de campos" name="field_maps">
                             <field name="field_map_ids" context="{'default_job_id': active_id}">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="source_field_id"
                                            domain="[('model_id', '=', parent.source_model_id)]"/>
@@ -68,12 +68,12 @@
                                            invisible="transform_type != 'lookup'"
                                            required="transform_type == 'lookup'"/>
                                     <field name="required"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Reglas de validación" name="rules">
                             <field name="rule_ids" context="{'default_job_id': active_id}">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="name"/>
                                     <field name="field_id"
@@ -84,7 +84,7 @@
                                            required="rule_type == 'format_regex'"/>
                                     <field name="on_failure"/>
                                     <field name="active"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
@@ -98,7 +98,7 @@
         <field name="name">migration.job.tree</field>
         <field name="model">migration.job</field>
         <field name="arch" type="xml">
-            <tree decoration-danger="state == 'error'"
+            <list decoration-danger="state == 'error'"
                   decoration-warning="state == 'partial'"
                   decoration-success="state == 'done'"
                   decoration-info="state == 'running'"
@@ -114,7 +114,7 @@
                        decoration-info="state == 'running'"/>
                 <field name="last_run"/>
                 <field name="total_runs"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -175,6 +175,6 @@
     <record id="action_migration_job" model="ir.actions.act_window">
         <field name="name">Trabajos de migración</field>
         <field name="res_model">migration.job</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>

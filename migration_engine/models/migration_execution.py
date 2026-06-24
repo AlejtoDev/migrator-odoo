@@ -64,11 +64,7 @@ class MigrationExecution(models.AbstractModel):
                         **log_vals,
                     })
 
-        final_state = (
-            'error'   if has_errors and not has_warnings else
-            'partial' if has_errors else
-            'done'
-        )
+        final_state = 'error' if has_errors else 'partial' if has_warnings else 'done'
         run.write({'state': final_state, 'end_date': fields.Datetime.now()})
         job.write({'state': final_state})
         return run

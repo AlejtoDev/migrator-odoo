@@ -6,20 +6,20 @@
         <field name="name">audit.category.product.tree</field>
         <field name="model">audit.category.product</field>
         <field name="arch" type="xml">
-            <tree editable="bottom">
+            <list editable="bottom">
                 <field name="sequence" widget="handle"/>
                 <field name="category"/>
                 <field name="product_id"
-                       domain="[('type', '=', 'service')]"
+                       domain="[('detailed_type', '=', 'service')]"
                        options="{'no_create': False}"/>
-            </tree>
+            </list>
         </field>
     </record>
 
     <record id="action_audit_category_product" model="ir.actions.act_window">
         <field name="name">Productos por categoría</field>
         <field name="res_model">audit.category.product</field>
-        <field name="view_mode">tree</field>
+        <field name="view_mode">list</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Asigna un producto de servicio a cada categoría de esfuerzo

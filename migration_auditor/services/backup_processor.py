@@ -5,6 +5,7 @@ import zipfile
 import tempfile
 import logging
 import psycopg2
+from psycopg2 import sql as pgsql
 
 _logger = logging.getLogger(__name__)
 
@@ -81,14 +82,22 @@ class BackupProcessor:
         conn = self._get_conn()
         conn.autocommit = True
         with conn.cursor() as cur:
-            cur.execute(f'CREATE SCHEMA IF NOT EXISTS "{self.schema}"')
+            cur.execute(
+                pgsql.SQL('CREATE SCHEMA IF NOT EXISTS {}').format(
+                    pgsql.Identifier(self.schema)
+                )
+            )
         _logger.info('BackupProcessor: schema %s creado', self.schema)
 
     def drop_schema(self):
         conn = self._get_conn()
         conn.autocommit = True
         with conn.cursor() as cur:
-            cur.execute(f'DROP SCHEMA IF EXISTS "{self.schema}" CASCADE')
+            cur.execute(
+                pgsql.SQL('DROP SCHEMA IF EXISTS {} CASCADE').format(
+                    pgsql.Identifier(self.schema)
+                )
+            )
         _logger.info('BackupProcessor: schema %s eliminado', self.schema)
 
     def import_sql_dump(self, sql_bytes, log_callback=None):
@@ -103,7 +112,11 @@ class BackupProcessor:
         try:
             sql_text = sql_bytes.decode('utf-8', errors='replace')
             with conn.cursor() as cur:
-                cur.execute(f'SET search_path TO "{self.schema}", public')
+                cur.execute(
+                    pgsql.SQL('SET search_path TO {}, public').format(
+                        pgsql.Identifier(self.schema)
+                    )
+                )
                 statements = self._split_sql(sql_text)
                 total = len(statements)
                 errors = 0
@@ -117,7 +130,11 @@ class BackupProcessor:
                     except Exception as e:
                         errors += 1
                         conn.rollback()
-                        cur.execute(f'SET search_path TO "{self.schema}", public')
+                        cur.execute(
+                            pgsql.SQL('SET search_path TO {}, public').format(
+                                pgsql.Identifier(self.schema)
+                            )
+                        )
                         if errors <= 10:
                             log(f'[WARN stmt {i}/{total}] {str(e)[:200]}')
 
@@ -200,7 +217,11 @@ class BackupProcessor:
     def query(self, sql, params=None):
         conn = self._get_conn()
         with conn.cursor() as cur:
-            cur.execute(f'SET search_path TO "{self.schema}", public')
+            cur.execute(
+                pgsql.SQL('SET search_path TO {}, public').format(
+                    pgsql.Identifier(self.schema)
+                )
+            )
             cur.execute(sql, params or [])
             cols = [desc[0] for desc in cur.description]
             return [dict(zip(cols, row)) for row in cur.fetchall()]
@@ -235,7 +256,11 @@ class BackupProcessor:
     def get_record_count(self, table_name):
         sql_table = table_name.replace('.', '_')
         try:
-            result = self.query(f'SELECT COUNT(*) AS cnt FROM "{sql_table}"')
+            result = self._query_composed(
+                pgsql.SQL('SELECT COUNT(*) AS cnt FROM {}').format(
+                    pgsql.Identifier(sql_table)
+                )
+            )
             return result[0]['cnt'] if result else 0
         except Exception:
             return -1
@@ -243,14 +268,33 @@ class BackupProcessor:
     def get_field_value_count(self, table_name, field_name):
         sql_table = table_name.replace('.', '_')
         try:
-            result = self.query(
-                f'SELECT COUNT(*) AS cnt FROM "{sql_table}" '
-                f'WHERE "{field_name}" IS NOT NULL '
-                f'AND "{field_name}"::text NOT IN (\'\', \'0\', \'false\')'
+            result = self._query_composed(
+                pgsql.SQL(
+                    "SELECT COUNT(*) AS cnt FROM {} "
+                    "WHERE {} IS NOT NULL "
+                    "AND {}::text NOT IN ('', '0', 'false')"
+                ).format(
+                    pgsql.Identifier(sql_table),
+                    pgsql.Identifier(field_name),
+                    pgsql.Identifier(field_name),
+                )
             )
             return result[0]['cnt'] if result else 0
         except Exception:
             return -1
+
+    def _query_composed(self, composed):
+        """Ejecuta una `psycopg2.sql.Composed` con el search_path del schema."""
+        conn = self._get_conn()
+        with conn.cursor() as cur:
+            cur.execute(
+                pgsql.SQL('SET search_path TO {}, public').format(
+                    pgsql.Identifier(self.schema)
+                )
+            )
+            cur.execute(composed)
+            cols = [desc[0] for desc in cur.description]
+            return [dict(zip(cols, row)) for row in cur.fetchall()]
 
     def get_odoo_version(self):
         try:

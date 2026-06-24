@@ -1,6 +1,6 @@
 {
     'name': 'Migration Auditor',
-    'version': '17.0.1.1.0',
+    'version': '18.0.1.1.0',
     'summary': 'Auditoría remota de instancias Odoo y presupuesto de migraciones',
     'category': 'Technical',
     'author': 'AlejtoDev',

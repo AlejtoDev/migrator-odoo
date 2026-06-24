@@ -28,22 +28,22 @@
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" type="object"
                                 name="action_view_modules" icon="fa-cubes"
-                                attrs="{'invisible': [('module_count', '=', 0)]}">
+                                invisible="module_count == 0">
                             <field name="module_count" widget="statinfo" string="Módulos"/>
                         </button>
                         <button class="oe_stat_button" type="object"
                                 name="action_view_fields" icon="fa-columns"
-                                attrs="{'invisible': [('field_count', '=', 0)]}">
+                                invisible="field_count == 0">
                             <field name="field_count" widget="statinfo" string="Campos custom"/>
                         </button>
                         <button class="oe_stat_button" type="object"
                                 name="action_view_models" icon="fa-table"
-                                attrs="{'invisible': [('model_count', '=', 0)]}">
+                                invisible="model_count == 0">
                             <field name="model_count" widget="statinfo" string="Modelos custom"/>
                         </button>
                         <button class="oe_stat_button" type="object"
                                 name="action_view_sale_orders" icon="fa-shopping-cart"
-                                attrs="{'invisible': [('sale_order_count', '=', 0)]}">
+                                invisible="sale_order_count == 0">
                             <field name="sale_order_count" widget="statinfo" string="Cotizaciones"/>
                         </button>
                     </div>
@@ -62,10 +62,10 @@
                         <group string="Configuración de auditoría">
                             <field name="audit_mode" widget="radio"/>
                             <field name="connection_id"
-                                   attrs="{'invisible': [('audit_mode', '!=', 'xmlrpc')],
-                                           'required': [('audit_mode', '=', 'xmlrpc')]}"/>
+                                   invisible="audit_mode != 'xmlrpc'"
+                                   required="audit_mode == 'xmlrpc'"/>
                             <field name="backup_id" readonly="1"
-                                   attrs="{'invisible': [('audit_mode', '!=', 'backup')]}"/>
+                                   invisible="audit_mode != 'backup'"/>
                             <field name="scan_date" readonly="1"/>
                         </group>
                     </group>
@@ -79,9 +79,9 @@
                         <group>
                             <field name="override_product"/>
                             <field name="project_product_id"
-                                   domain="[('type', '=', 'service')]"
-                                   attrs="{'invisible': [('override_product', '=', False)],
-                                           'required': [('override_product', '=', True)]}"/>
+                                   domain="[('detailed_type', '=', 'service')]"
+                                   invisible="not override_product"
+                                   required="override_product"/>
                             <field name="total_hours" readonly="1"/>
                             <field name="total_cost" readonly="1"
                                    widget="monetary" options="{'currency_field': 'currency_id'}"/>
@@ -90,8 +90,8 @@
 
                     <notebook>
                         <page string="Módulos instalados" name="modules">
-                            <field name="module_finding_ids" mode="tree" nolabel="1">
-                                <tree>
+                            <field name="module_finding_ids" mode="list" nolabel="1">
+                                <list>
                                     <field name="name"/>
                                     <field name="display_name_module"/>
                                     <field name="module_category" widget="badge"
@@ -106,12 +106,12 @@
                                            decoration-danger="compatibility_risk == 'high'"/>
                                     <field name="is_relevant" widget="boolean_toggle"/>
                                     <field name="effort_hours"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Campos custom" name="fields">
-                            <field name="field_finding_ids" mode="tree" nolabel="1">
-                                <tree>
+                            <field name="field_finding_ids" mode="list" nolabel="1">
+                                <list>
                                     <field name="name"/>
                                     <field name="model_name"/>
                                     <field name="field_type"/>
@@ -122,24 +122,24 @@
                                     <field name="has_data" widget="boolean_toggle"/>
                                     <field name="record_count_with_value"/>
                                     <field name="migration_decision"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Modelos custom" name="models">
-                            <field name="model_finding_ids" mode="tree" nolabel="1">
-                                <tree>
+                            <field name="model_finding_ids" mode="list" nolabel="1">
+                                <list>
                                     <field name="name"/>
                                     <field name="description"/>
                                     <field name="field_count"/>
                                     <field name="record_count"/>
                                     <field name="migration_decision"/>
                                     <field name="effort_hours"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Volumen de datos" name="volume">
-                            <field name="volume_finding_ids" mode="tree" nolabel="1">
-                                <tree>
+                            <field name="volume_finding_ids" mode="list" nolabel="1">
+                                <list>
                                     <field name="display_name"/>
                                     <field name="record_count"/>
                                     <field name="volume_tier" widget="badge"
@@ -148,12 +148,12 @@
                                            decoration-danger="volume_tier == 'high'"/>
                                     <field name="effort_extra_hours"/>
                                     <field name="notes"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Estimación de horas" name="effort">
-                            <field name="effort_line_ids" mode="tree" nolabel="1">
-                                <tree editable="bottom">
+                            <field name="effort_line_ids" mode="list" nolabel="1">
+                                <list editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="category"/>
                                     <field name="description"/>
@@ -162,7 +162,7 @@
                                     <field name="unit_price"/>
                                     <field name="subtotal"/>
                                     <field name="reference"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Resumen ejecutivo" name="summary">
@@ -187,7 +187,7 @@
         <field name="name">audit.project.tree</field>
         <field name="model">audit.project</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name"/>
                 <field name="client_name"/>
                 <field name="audit_mode"/>
@@ -201,7 +201,7 @@
                        decoration-success="state == 'done'"
                        decoration-danger="state == 'error'"/>
                 <field name="currency_id" column_invisible="1"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -232,7 +232,7 @@
     <record id="action_audit_project" model="ir.actions.act_window">
         <field name="name">Proyectos de Auditoría</field>
         <field name="res_model">audit.project</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_audit_project_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

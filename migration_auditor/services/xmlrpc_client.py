@@ -1,11 +1,36 @@
-import socket
 import xmlrpc.client
 import logging
 
 _logger = logging.getLogger(__name__)
 
-# Timeout global para evitar que el wizard cuelgue si el cliente no responde
-socket.setdefaulttimeout(30)
+_TIMEOUT = 30
+
+
+class _TimeoutTransport(xmlrpc.client.Transport):
+    def __init__(self, timeout=_TIMEOUT):
+        super().__init__()
+        self._timeout = timeout
+
+    def make_connection(self, host):
+        conn = super().make_connection(host)
+        conn.timeout = self._timeout
+        return conn
+
+
+class _TimeoutSafeTransport(xmlrpc.client.SafeTransport):
+    def __init__(self, timeout=_TIMEOUT):
+        super().__init__()
+        self._timeout = timeout
+
+    def make_connection(self, host):
+        conn = super().make_connection(host)
+        conn.timeout = self._timeout
+        return conn
+
+
+def _make_transport(url, timeout=_TIMEOUT):
+    cls = _TimeoutSafeTransport if url.startswith('https') else _TimeoutTransport
+    return cls(timeout=timeout)
 
 
 class OdooXmlRpcClient:
@@ -19,8 +44,14 @@ class OdooXmlRpcClient:
         self._uid = None
         self._authenticate()
 
+    def _proxy(self, path):
+        return xmlrpc.client.ServerProxy(
+            f'{self.url}{path}',
+            transport=_make_transport(self.url),
+        )
+
     def _authenticate(self):
-        common = xmlrpc.client.ServerProxy(f'{self.url}/xmlrpc/2/common')
+        common = self._proxy('/xmlrpc/2/common')
         self._uid = common.authenticate(
             self.database, self.username, self.password, {}
         )
@@ -30,11 +61,10 @@ class OdooXmlRpcClient:
             )
 
     def get_server_version(self):
-        common = xmlrpc.client.ServerProxy(f'{self.url}/xmlrpc/2/common')
-        return common.version()
+        return self._proxy('/xmlrpc/2/common').version()
 
     def execute(self, model, method, domain=None, fields=None, **kwargs):
-        models_proxy = xmlrpc.client.ServerProxy(f'{self.url}/xmlrpc/2/object')
+        models_proxy = self._proxy('/xmlrpc/2/object')
         args = [domain or []]
         if fields:
             kwargs['fields'] = fields

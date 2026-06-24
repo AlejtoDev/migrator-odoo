@@ -29,7 +29,6 @@ class AuditProject(models.Model):
     connection_id = fields.Many2one(
         'audit.connection',
         string='Credenciales XML-RPC',
-        attrs="{'required': [('audit_mode', '=', 'xmlrpc')]}",
     )
     backup_id = fields.Many2one('audit.backup', string='Backup procesado')
     state = fields.Selection([
@@ -72,7 +71,7 @@ class AuditProject(models.Model):
     project_product_id = fields.Many2one(
         'product.product',
         string='Producto único del proyecto',
-        domain=[('type', '=', 'service')],
+        domain=[('detailed_type', '=', 'service')],
     )
 
     # ── Sale orders vinculadas ──────────────────────────────────────────────────
@@ -119,7 +118,7 @@ class AuditProject(models.Model):
         param = self.env['ir.config_parameter'].sudo().get_param(
             'migration_auditor.default_hourly_rate'
         )
-        return float(param) if param else 0.0
+        return float(param) if param and param != '0' else 0.0
 
     # ── Computes ───────────────────────────────────────────────────────────────
 

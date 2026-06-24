@@ -1,6 +1,6 @@
 {
     'name': 'Migration Engine',
-    'version': '17.0.2.0.0',
+    'version': '18.0.2.0.0',
     'summary': 'Motor ETL + inventario técnico de instancia para proyectos de migración',
     'category': 'Technical',
     'author': 'AlejtoDev',

@@ -15,15 +15,15 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" icon="fa-check-circle"
-                                attrs="{'invisible': [('success_count', '=', 0)]}">
+                                invisible="success_count == 0">
                             <field name="success_count" widget="statinfo" string="OK"/>
                         </button>
                         <button class="oe_stat_button" icon="fa-exclamation-triangle"
-                                attrs="{'invisible': [('warning_count', '=', 0)]}">
+                                invisible="warning_count == 0">
                             <field name="warning_count" widget="statinfo" string="Warnings"/>
                         </button>
                         <button class="oe_stat_button" icon="fa-times-circle"
-                                attrs="{'invisible': [('error_count', '=', 0)]}">
+                                invisible="error_count == 0">
                             <field name="error_count" widget="statinfo" string="Errores"/>
                         </button>
                     </div>
@@ -41,7 +41,7 @@
                         </group>
                     </group>
                     <field name="log_ids" readonly="1">
-                        <tree decoration-danger="log_type == 'error'"
+                        <list decoration-danger="log_type == 'error'"
                               decoration-warning="log_type == 'warning'"
                               decoration-success="log_type == 'info'">
                             <field name="execution_date"/>
@@ -55,7 +55,7 @@
                             <field name="rule_name"/>
                             <field name="message"/>
                             <field name="was_rollback"/>
-                        </tree>
+                        </list>
                     </field>
                 </sheet>
             </form>
@@ -67,7 +67,7 @@
         <field name="name">migration.execution.run.tree</field>
         <field name="model">migration.execution.run</field>
         <field name="arch" type="xml">
-            <tree decoration-danger="state == 'error'"
+            <list decoration-danger="state == 'error'"
                   decoration-warning="state == 'partial'"
                   decoration-success="state == 'done'"
                   decoration-info="state == 'running'">
@@ -85,7 +85,7 @@
                 <field name="success_count"/>
                 <field name="warning_count"/>
                 <field name="error_count"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -115,6 +115,6 @@
     <record id="action_migration_execution_run_all" model="ir.actions.act_window">
         <field name="name">Historial de ejecuciones</field>
         <field name="res_model">migration.execution.run</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>

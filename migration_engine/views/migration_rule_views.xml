@@ -19,10 +19,10 @@
                             <field name="on_failure"/>
                         </group>
                     </group>
-                    <group attrs="{'invisible': [('rule_type', '!=', 'format_regex')]}">
+                    <group invisible="rule_type != 'format_regex'">
                         <field name="regex_pattern"/>
                     </group>
-                    <group attrs="{'invisible': [('rule_type', '!=', 'python_expr')]}">
+                    <group invisible="rule_type != 'python_expr'">
                         <field name="python_expr" placeholder="Ej: len(str(value)) > 3"/>
                     </group>
                 </sheet>
@@ -35,17 +35,17 @@
         <field name="name">migration.rule.tree</field>
         <field name="model">migration.rule</field>
         <field name="arch" type="xml">
-            <tree editable="bottom">
+            <list editable="bottom">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="field_id" domain="[('model_id', '=', parent.source_model_id)]"/>
                 <field name="rule_type"/>
                 <field name="regex_pattern"
-                       attrs="{'invisible': [('rule_type', '!=', 'format_regex')],
-                               'required': [('rule_type', '=', 'format_regex')]}"/>
+                       invisible="rule_type != 'format_regex'"
+                       required="rule_type == 'format_regex'"/>
                 <field name="on_failure"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
 </odoo>

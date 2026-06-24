@@ -150,32 +150,37 @@ class TestMigrationJob(TransactionCase):
     # ── EXECUTION RUN ─────────────────────────────────────────────────────
 
     def test_execution_run_state_default(self):
+        job = self._create_job(name='Run State Job')
         run = self.env['migration.execution.run'].create({
             'name': 'RUN/TEST/0001',
+            'job_id': job.id,
         })
         self.assertEqual(run.state, 'running')
         self.assertTrue(run.name.startswith('RUN'))
 
     def test_execution_run_counts_compute(self):
+        job = self._create_job(name='Run Counts Job')
         run = self.env['migration.execution.run'].create({
             'name': 'RUN/TEST/0002',
+            'job_id': job.id,
         })
-        job = self._create_job()
         self.env['migration.log'].create([
-            {'run_id': run.id, 'job_id': job.id, 'result': 'success',
-             'source_record_id': 1, 'message': 'OK'},
-            {'run_id': run.id, 'job_id': job.id, 'result': 'warning',
-             'source_record_id': 2, 'message': 'Warning'},
-            {'run_id': run.id, 'job_id': job.id, 'result': 'error',
-             'source_record_id': 3, 'message': 'Error'},
+            {'execution_run_id': run.id, 'job_id': job.id, 'log_type': 'info',
+             'source_record_id_int': 1, 'message': 'OK'},
+            {'execution_run_id': run.id, 'job_id': job.id, 'log_type': 'warning',
+             'source_record_id_int': 2, 'message': 'Warning'},
+            {'execution_run_id': run.id, 'job_id': job.id, 'log_type': 'error',
+             'source_record_id_int': 3, 'message': 'Error'},
         ])
         self.assertEqual(run.success_count, 1)
         self.assertEqual(run.warning_count, 1)
         self.assertEqual(run.error_count, 1)
 
     def test_execution_run_state_transition(self):
+        job = self._create_job(name='Run Transition Job')
         run = self.env['migration.execution.run'].create({
             'name': 'RUN/TEST/0003',
+            'job_id': job.id,
         })
         run.write({'state': 'done'})
         self.assertEqual(run.state, 'done')
