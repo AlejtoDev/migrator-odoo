@@ -79,7 +79,6 @@
                         <group>
                             <field name="override_product"/>
                             <field name="project_product_id"
-                                   domain="[('detailed_type', '=', 'service')]"
                                    invisible="not override_product"
                                    required="override_product"/>
                             <field name="total_hours" readonly="1"/>

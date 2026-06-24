@@ -57,7 +57,6 @@
                                         <label for="auditor_default_product_id"
                                                class="col-lg-4 o_light_label"/>
                                         <field name="auditor_default_product_id"
-                                               domain="[('detailed_type', '=', 'service')]"
                                                class="col-lg-8"/>
                                     </div>
                                 </div>
