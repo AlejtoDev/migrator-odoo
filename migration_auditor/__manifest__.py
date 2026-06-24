@@ -1,11 +1,11 @@
 {
     'name': 'Migration Auditor',
-    'version': '17.0.1.0.0',
+    'version': '17.0.1.1.0',
     'summary': 'Auditoría remota de instancias Odoo y presupuesto de migraciones',
     'category': 'Technical',
     'author': 'AlejtoDev',
     'website': 'https://odoo.alejtodev.cl',
-    'depends': ['base', 'web', 'mail'],
+    'depends': ['base', 'web', 'mail', 'sale'],
     'data': [
         'security/auditor_security.xml',
         'security/ir.model.access.csv',
@@ -13,6 +13,8 @@
         'data/effort_rules_data.xml',
         'report/audit_report_action.xml',
         'report/audit_report_template.xml',
+        'views/res_config_settings_views.xml',
+        'views/audit_category_product_views.xml',
         'views/audit_project_views.xml',
         'views/audit_connection_views.xml',
         'views/audit_backup_views.xml',

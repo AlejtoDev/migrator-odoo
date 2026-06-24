@@ -25,5 +25,26 @@
               sequence="20"
               groups="migration_auditor.group_auditor_user"/>
 
+    <!-- ── Configuración ── -->
+    <menuitem id="menu_auditor_config"
+              name="Configuración"
+              parent="menu_migration_auditor_root"
+              sequence="90"
+              groups="migration_auditor.group_auditor_user"/>
+
+    <menuitem id="menu_audit_category_products"
+              name="Productos por categoría"
+              parent="menu_auditor_config"
+              action="action_audit_category_product"
+              sequence="91"
+              groups="migration_auditor.group_auditor_user"/>
+
+    <menuitem id="menu_auditor_settings"
+              name="Ajustes"
+              parent="menu_auditor_config"
+              action="base_setup.action_general_configuration"
+              sequence="92"
+              groups="migration_auditor.group_auditor_user"/>
+
 </data>
 </odoo>

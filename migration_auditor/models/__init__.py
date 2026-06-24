@@ -6,3 +6,5 @@ from . import audit_field_finding
 from . import audit_model_finding
 from . import audit_volume_finding
 from . import audit_effort_line
+from . import audit_category_product
+from . import res_config_settings

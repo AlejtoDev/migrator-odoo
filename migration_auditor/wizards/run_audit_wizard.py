@@ -433,7 +433,13 @@ class RunAuditWizard(models.TransientModel):
 
         seq = 10
         for line_vals in lines:
-            self.env['audit.effort.line'].create({'project_id': project.id, 'sequence': seq, **line_vals})
+            product = project._get_product_for_line(line_vals.get('category', 'other'))
+            self.env['audit.effort.line'].create({
+                'project_id': project.id,
+                'sequence': seq,
+                'product_id': product.id if product else False,
+                **line_vals,
+            })
             seq += 10
 
         log(f'  → {len(lines)} líneas de esfuerzo generadas. Total: {subtotal + contingency:.1f}h')

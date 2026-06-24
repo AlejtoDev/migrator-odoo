@@ -26,6 +26,12 @@ class AuditEffortLine(models.Model):
         ('manual', 'Manual'),
     ], string='Origen', default='manual')
     estimated_hours = fields.Float(string='Horas estimadas')
+    product_id = fields.Many2one(
+        'product.product',
+        string='Producto',
+        domain=[('type', '=', 'service')],
+        help='Producto de servicio que representa esta línea en la cotización de venta.',
+    )
     unit_price = fields.Float(
         string='Tarifa hora',
         related='project_id.hourly_rate',

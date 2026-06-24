@@ -14,6 +14,9 @@
                             attrs="{'invisible': [('state', 'not in', ['draft', 'error'])]}"/>
                     <button name="action_generate_report" string="Generar Informe PDF" type="object"
                             attrs="{'invisible': [('state', '!=', 'done')]}"/>
+                    <button name="action_create_sale_order" string="Crear cotización" type="object"
+                            icon="fa-file-text-o"
+                            attrs="{'invisible': [('state', '!=', 'done')]}"/>
                     <button name="action_reset_draft" string="Reiniciar" type="object"
                             attrs="{'invisible': [('state', 'in', ['draft'])]}"/>
                     <field name="state" widget="statusbar"
@@ -37,6 +40,11 @@
                                 name="action_view_models" icon="fa-table"
                                 attrs="{'invisible': [('model_count', '=', 0)]}">
                             <field name="model_count" widget="statinfo" string="Modelos custom"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_sale_orders" icon="fa-shopping-cart"
+                                attrs="{'invisible': [('sale_order_count', '=', 0)]}">
+                            <field name="sale_order_count" widget="statinfo" string="Cotizaciones"/>
                         </button>
                     </div>
 
@@ -62,12 +70,18 @@
                         </group>
                     </group>
 
-                    <group string="Presupuesto">
+                    <group string="Configuración financiera">
                         <group>
-                            <field name="hourly_rate"/>
+                            <field name="partner_id"/>
                             <field name="currency_id"/>
+                            <field name="hourly_rate"/>
                         </group>
                         <group>
+                            <field name="override_product"/>
+                            <field name="project_product_id"
+                                   domain="[('type', '=', 'service')]"
+                                   attrs="{'invisible': [('override_product', '=', False)],
+                                           'required': [('override_product', '=', True)]}"/>
                             <field name="total_hours" readonly="1"/>
                             <field name="total_cost" readonly="1"
                                    widget="monetary" options="{'currency_field': 'currency_id'}"/>

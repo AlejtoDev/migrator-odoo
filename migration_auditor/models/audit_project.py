@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from odoo.exceptions import UserError
 
 ODOO_VERSIONS = [
     ('12.0', 'Odoo 12.0'),
@@ -40,23 +41,87 @@ class AuditProject(models.Model):
     scan_date = fields.Datetime(string='Fecha de escaneo')
     odoo_version_detected = fields.Char(string='Versión detectada')
     is_enterprise = fields.Boolean(string='Enterprise')
+
     module_finding_ids = fields.One2many('audit.module.finding', 'project_id', string='Módulos')
     field_finding_ids = fields.One2many('audit.field.finding', 'project_id', string='Campos custom')
     model_finding_ids = fields.One2many('audit.model.finding', 'project_id', string='Modelos custom')
     volume_finding_ids = fields.One2many('audit.volume.finding', 'project_id', string='Volumen')
     effort_line_ids = fields.One2many('audit.effort.line', 'project_id', string='Estimación')
-    hourly_rate = fields.Float(string='Tarifa hora', default=0.0)
+
+    # ── Configuración financiera del proyecto ───────────────────────────────────
+
+    partner_id = fields.Many2one(
+        'res.partner',
+        string='Cliente (res.partner)',
+        help='Contacto en Odoo para crear la cotización de venta.',
+    )
+    currency_id = fields.Many2one(
+        'res.currency',
+        string='Moneda',
+        default=lambda self: self._default_currency(),
+        required=True,
+    )
+    hourly_rate = fields.Float(
+        string='Tarifa hora',
+        default=lambda self: self._default_hourly_rate(),
+    )
+    override_product = fields.Boolean(
+        string='Sobreescribir producto por proyecto',
+        help='Si está activo, todas las líneas usarán el producto seleccionado aquí.',
+    )
+    project_product_id = fields.Many2one(
+        'product.product',
+        string='Producto único del proyecto',
+        domain=[('type', '=', 'service')],
+    )
+
+    # ── Sale orders vinculadas ──────────────────────────────────────────────────
+
+    sale_order_ids = fields.Many2many(
+        'sale.order',
+        'audit_project_sale_order_rel',
+        'project_id',
+        'sale_order_id',
+        string='Cotizaciones generadas',
+        readonly=True,
+    )
+    sale_order_count = fields.Integer(compute='_compute_sale_order_count', string='Cotizaciones')
+
+    # ── Totales ────────────────────────────────────────────────────────────────
+
     total_hours = fields.Float(string='Total horas', compute='_compute_totals', store=True)
     total_cost = fields.Float(string='Costo total', compute='_compute_totals', store=True)
-    currency_id = fields.Many2one('res.currency', string='Moneda',
-                                  default=lambda self: self.env.company.currency_id)
+
+    # ── Contenido editorial ────────────────────────────────────────────────────
+
     consultant_notes = fields.Html(string='Notas internas del consultor', sanitize=False)
     executive_summary = fields.Html(string='Resumen ejecutivo', sanitize=False)
 
-    # Contadores para smart buttons
+    # ── Contadores smart buttons ───────────────────────────────────────────────
+
     module_count = fields.Integer(compute='_compute_counts')
     field_count = fields.Integer(compute='_compute_counts')
     model_count = fields.Integer(compute='_compute_counts')
+
+    # ── Defaults desde ir.config_parameter ────────────────────────────────────
+
+    @api.model
+    def _default_currency(self):
+        param = self.env['ir.config_parameter'].sudo().get_param(
+            'migration_auditor.default_currency_id'
+        )
+        if param and param != '0':
+            return int(param)
+        return self.env.company.currency_id.id
+
+    @api.model
+    def _default_hourly_rate(self):
+        param = self.env['ir.config_parameter'].sudo().get_param(
+            'migration_auditor.default_hourly_rate'
+        )
+        return float(param) if param else 0.0
+
+    # ── Computes ───────────────────────────────────────────────────────────────
 
     @api.depends('effort_line_ids', 'effort_line_ids.estimated_hours', 'hourly_rate')
     def _compute_totals(self):
@@ -70,6 +135,19 @@ class AuditProject(models.Model):
             project.module_count = len(project.module_finding_ids)
             project.field_count = len(project.field_finding_ids)
             project.model_count = len(project.model_finding_ids)
+
+    def _compute_sale_order_count(self):
+        for rec in self:
+            rec.sale_order_count = len(rec.sale_order_ids)
+
+    # ── Helpers ────────────────────────────────────────────────────────────────
+
+    def _get_product_for_line(self, category):
+        if self.override_product and self.project_product_id:
+            return self.project_product_id
+        return self.env['audit.category.product'].get_product_for_category(category)
+
+    # ── Acciones ──────────────────────────────────────────────────────────────
 
     def action_run_audit(self):
         self.ensure_one()
@@ -101,6 +179,30 @@ class AuditProject(models.Model):
         self.volume_finding_ids.unlink()
         self.effort_line_ids.filtered(lambda l: l.source == 'auto').unlink()
         self.write({'state': 'draft', 'scan_date': False, 'odoo_version_detected': False})
+
+    def action_create_sale_order(self):
+        self.ensure_one()
+        if self.state != 'done':
+            raise UserError('El proyecto debe estar en estado "Completado" para crear una cotización.')
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Crear cotización',
+            'res_model': 'create.sale.order.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_project_id': self.id},
+        }
+
+    def action_view_sale_orders(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Cotizaciones',
+            'res_model': 'sale.order',
+            'view_mode': 'tree,form',
+            'domain': [('id', 'in', self.sale_order_ids.ids)],
+            'context': {'default_partner_id': self.partner_id.id},
+        }
 
     def action_view_modules(self):
         self.ensure_one()
