@@ -8,8 +8,8 @@ class MigrationJob(models.Model):
     _order = 'name'
 
     name = fields.Char(string='Nombre', required=True)
-    source_model_id = fields.Many2one('ir.model', string='Modelo origen', required=True, ondelete='restrict')
-    dest_model_id = fields.Many2one('ir.model', string='Modelo destino', required=True, ondelete='restrict')
+    source_model_id = fields.Many2one('ir.model', string='Modelo origen', required=True, ondelete='cascade')
+    dest_model_id = fields.Many2one('ir.model', string='Modelo destino', required=True, ondelete='cascade')
     domain = fields.Char(string='Dominio de filtro', default='[]')
     mode = fields.Selection([
         ('create_only', 'Solo crear'),
