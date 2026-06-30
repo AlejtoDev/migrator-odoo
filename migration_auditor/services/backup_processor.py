@@ -243,11 +243,35 @@ class BackupProcessor:
             ORDER BY m.model, f.name
         """)
 
-    def get_custom_models(self):
+    def get_custom_models(self, custom_module_names=None):
+        if custom_module_names:
+            placeholders = ','.join(['%s'] * len(custom_module_names))
+            # field_count = solo campos propios del módulo custom o campos Studio (state='manual')
+            return self.query(f"""
+                SELECT DISTINCT m.model, m.name, m.info,
+                    COUNT(DISTINCT CASE
+                        WHEN imd_f.module IN ({placeholders}) OR f.state = 'manual'
+                        THEN f.id ELSE NULL
+                    END) AS field_count
+                FROM ir_model m
+                LEFT JOIN ir_model_fields f ON f.model_id = m.id
+                LEFT JOIN ir_model_data imd_f
+                    ON imd_f.model = 'ir.model.fields' AND imd_f.res_id = f.id
+                WHERE m.state = 'manual'
+                   OR EXISTS (
+                       SELECT 1 FROM ir_model_data imd
+                       WHERE imd.model = 'ir.model'
+                         AND imd.res_id = m.id
+                         AND imd.module IN ({placeholders})
+                   )
+                GROUP BY m.id, m.model, m.name, m.info
+                ORDER BY m.model
+            """, params=list(custom_module_names) * 2)
         return self.query("""
-            SELECT m.model, m.name, m.info, COUNT(f.id) AS field_count
+            SELECT m.model, m.name, m.info,
+                   COUNT(CASE WHEN f.state = 'manual' THEN f.id END) AS field_count
             FROM ir_model m
-            LEFT JOIN ir_model_fields f ON f.model_id = m.id AND f.state = 'base'
+            LEFT JOIN ir_model_fields f ON f.model_id = m.id
             WHERE m.state = 'manual'
             GROUP BY m.id, m.model, m.name, m.info
             ORDER BY m.model

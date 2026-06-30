@@ -13,12 +13,14 @@ class MigrationFieldMap(models.Model):
         'ir.model.fields',
         string='Campo origen',
         domain="[('model_id', '=', parent.source_model_id)]",
+        ondelete='cascade',
     )
     dest_field_id = fields.Many2one(
         'ir.model.fields',
         string='Campo destino',
         domain="[('model_id', '=', parent.dest_model_id)]",
         required=True,
+        ondelete='cascade',
     )
     transform_type = fields.Selection([
         ('direct', 'Directo'),
@@ -31,16 +33,18 @@ class MigrationFieldMap(models.Model):
         string='Expresión Python',
         help='Variables disponibles: value, record, env.',
     )
-    lookup_model_id = fields.Many2one('ir.model', string='Modelo de lookup')
+    lookup_model_id = fields.Many2one('ir.model', string='Modelo de lookup', ondelete='cascade')
     lookup_source_field_id = fields.Many2one(
         'ir.model.fields',
         string='Campo búsqueda (lookup)',
         domain="[('model_id', '=', lookup_model_id)]",
+        ondelete='cascade',
     )
     lookup_dest_field_id = fields.Many2one(
         'ir.model.fields',
         string='Campo retorno (lookup)',
         domain="[('model_id', '=', lookup_model_id)]",
+        ondelete='cascade',
     )
     required = fields.Boolean(
         string='Requerido',

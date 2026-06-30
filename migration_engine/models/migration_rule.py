@@ -14,6 +14,7 @@ class MigrationRule(models.Model):
         string='Campo',
         domain="[('model_id', '=', parent.source_model_id)]",
         required=True,
+        ondelete='cascade',
     )
     rule_type = fields.Selection([
         ('not_null', 'No nulo'),

@@ -26,7 +26,7 @@ class AuditCategoryProduct(models.Model):
     product_id = fields.Many2one(
         'product.product',
         string='Producto de servicio',
-        domain=[('detailed_type', '=', 'service')],
+        domain=[('type', '=', 'service')],
         required=True,
     )
 
@@ -67,7 +67,7 @@ class AuditCategoryProduct(models.Model):
             product_name = f'Migración Odoo — {label}'
             product = self.env['product.product'].search([
                 ('name', '=', product_name),
-                ('detailed_type', '=', 'service'),
+                ('type', '=', 'service'),
             ], limit=1)
             if not product:
                 uom_hour = self.env.ref('uom.product_uom_hour', raise_if_not_found=False)

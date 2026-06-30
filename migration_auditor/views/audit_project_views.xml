@@ -12,10 +12,16 @@
                     <button name="action_run_audit" string="Iniciar Escaneo" type="object"
                             class="btn-primary"
                             invisible="state not in ('draft', 'error')"/>
+                    <button name="action_run_audit" string="Rescanear" type="object"
+                            invisible="state != 'done'"/>
                     <button name="action_generate_report" string="Generar Informe PDF" type="object"
                             invisible="state != 'done'"/>
                     <button name="action_create_sale_order" string="Crear cotización" type="object"
                             icon="fa-file-text-o"
+                            invisible="state != 'done'"/>
+                    <button name="action_create_implementation_project"
+                            string="Crear Proyecto de Implementación" type="object"
+                            icon="fa-tasks"
                             invisible="state != 'done'"/>
                     <button name="action_reset_draft" string="Reiniciar" type="object"
                             invisible="state == 'draft'"/>
@@ -49,7 +55,8 @@
                     </div>
 
                     <div class="oe_title">
-                        <h1><field name="name" readonly="1"/></h1>
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Nombre del proyecto"/></h1>
                     </div>
 
                     <group>
@@ -57,6 +64,7 @@
                             <field name="client_name"/>
                             <field name="client_email"/>
                             <field name="odoo_version_detected" readonly="1"/>
+                            <field name="target_version"/>
                             <field name="is_enterprise" readonly="1"/>
                         </group>
                         <group string="Configuración de auditoría">
@@ -79,7 +87,7 @@
                         <group>
                             <field name="override_product"/>
                             <field name="project_product_id"
-                                   domain="[('detailed_type', '=', 'service')]"
+                                   domain="[('type', '=', 'service')]"
                                    invisible="not override_product"
                                    required="override_product"/>
                             <field name="total_hours" readonly="1"/>
@@ -173,11 +181,7 @@
                         </page>
                     </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -196,7 +200,7 @@
                 <field name="total_hours"/>
                 <field name="total_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                 <field name="state" widget="badge"
-                       decoration-secondary="state == 'draft'"
+                       decoration-muted="state == 'draft'"
                        decoration-warning="state == 'scanning'"
                        decoration-success="state == 'done'"
                        decoration-danger="state == 'error'"/>

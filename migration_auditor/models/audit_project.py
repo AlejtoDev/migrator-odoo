@@ -8,6 +8,8 @@ ODOO_VERSIONS = [
     ('15.0', 'Odoo 15.0'),
     ('16.0', 'Odoo 16.0'),
     ('17.0', 'Odoo 17.0'),
+    ('18.0', 'Odoo 18.0'),
+    ('19.0', 'Odoo 19.0'),
 ]
 
 
@@ -71,7 +73,7 @@ class AuditProject(models.Model):
     project_product_id = fields.Many2one(
         'product.product',
         string='Producto único del proyecto',
-        domain=[('detailed_type', '=', 'service')],
+        domain=[('type', '=', 'service')],
     )
 
     # ── Sale orders vinculadas ──────────────────────────────────────────────────
@@ -198,7 +200,7 @@ class AuditProject(models.Model):
             'type': 'ir.actions.act_window',
             'name': 'Cotizaciones',
             'res_model': 'sale.order',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('id', 'in', self.sale_order_ids.ids)],
             'context': {'default_partner_id': self.partner_id.id},
         }
@@ -209,7 +211,7 @@ class AuditProject(models.Model):
             'type': 'ir.actions.act_window',
             'name': 'Módulos detectados',
             'res_model': 'audit.module.finding',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('project_id', '=', self.id)],
         }
 
@@ -219,7 +221,7 @@ class AuditProject(models.Model):
             'type': 'ir.actions.act_window',
             'name': 'Campos custom detectados',
             'res_model': 'audit.field.finding',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('project_id', '=', self.id)],
         }
 
@@ -229,6 +231,33 @@ class AuditProject(models.Model):
             'type': 'ir.actions.act_window',
             'name': 'Modelos custom detectados',
             'res_model': 'audit.model.finding',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('project_id', '=', self.id)],
+        }
+
+    def action_create_implementation_project(self):
+        self.ensure_one()
+        if not self.env['ir.module.module'].sudo().search([
+            ('name', '=', 'project'), ('state', '=', 'installed')
+        ], limit=1):
+            raise UserError('El módulo "Proyecto" debe estar instalado para usar esta función.')
+
+        version_label = self.target_version or self.odoo_version_detected or '?'
+        proj = self.env['project.project'].create({
+            'name': f'Migración Odoo {version_label} — {self.client_name}',
+            'partner_id': self.partner_id.id if self.partner_id else False,
+        })
+
+        for line in self.effort_line_ids:
+            self.env['project.task'].create({
+                'name': line.description or line.category,
+                'project_id': proj.id,
+                'planned_hours': line.estimated_hours,
+            })
+
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'project.project',
+            'view_mode': 'form',
+            'res_id': proj.id,
         }

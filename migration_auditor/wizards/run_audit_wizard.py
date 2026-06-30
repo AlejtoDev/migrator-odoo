@@ -111,7 +111,8 @@ class RunAuditWizard(models.TransientModel):
 
         if self.scan_models:
             log('Escaneando modelos custom...')
-            self._create_model_findings_xmlrpc(project, client.get_custom_models(), client, log)
+            custom_mods = [m.name for m in project.module_finding_ids if m.module_category == 'custom']
+            self._create_model_findings_xmlrpc(project, client.get_custom_models(custom_mods), client, log)
 
         if self.scan_volume:
             log('Midiendo volumen de datos...')
@@ -188,7 +189,8 @@ class RunAuditWizard(models.TransientModel):
 
             if self.scan_models:
                 log('Escaneando modelos custom...')
-                self._create_model_findings_backup(project, processor.get_custom_models(), processor, log)
+                custom_mods = [m.name for m in project.module_finding_ids if m.module_category == 'custom']
+                self._create_model_findings_backup(project, processor.get_custom_models(custom_mods), processor, log)
 
             if self.scan_volume:
                 log('Midiendo volumen de datos...')
@@ -299,13 +301,28 @@ class RunAuditWizard(models.TransientModel):
         log(f'  → {len(fields_data)} campos custom registrados')
 
     def _create_model_findings_xmlrpc(self, project, models_data, client, log):
+        if not models_data:
+            log('  → 0 modelos custom registrados')
+            return
+        custom_mods = [m.name for m in project.module_finding_ids if m.module_category == 'custom']
+        # Conteo de campos propios (no heredados) por model_id — una sola llamada batch
+        own_field_counts = client.get_own_field_counts_by_model(custom_mods)
         for m in models_data:
+            mid = m['id']
+            if mid in own_field_counts:
+                field_count = own_field_counts[mid]
+            else:
+                # Modelo Studio (state='manual'): todos sus campos son propios
+                field_count = client.search_count(
+                    'ir.model.fields',
+                    domain=[('model_id', '=', mid), ('state', '=', 'manual')],
+                )
             count = client.get_record_count(m['model'])
             self.env['audit.model.finding'].create({
                 'project_id': project.id,
                 'name': m['model'],
                 'description': m.get('name') or m.get('info') or '',
-                'field_count': len(m.get('field_id', [])),
+                'field_count': field_count,
                 'record_count': max(count, 0),
             })
         log(f'  → {len(models_data)} modelos custom registrados')

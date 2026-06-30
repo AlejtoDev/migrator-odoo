@@ -101,12 +101,61 @@ class OdooXmlRpcClient:
             fields=['name', 'field_description', 'model_id', 'ttype', 'state'],
         )
 
-    def get_custom_models(self):
-        return self.search_read(
+    def get_custom_models(self, custom_module_names=None):
+        # Modelos creados desde UI/Studio (state='manual')
+        manual = self.search_read(
             'ir.model',
             domain=[('state', '=', 'manual')],
             fields=['name', 'model', 'field_id', 'info'],
         )
+        result = {m['id']: m for m in manual}
+
+        # Modelos definidos en módulos custom Python (state='base')
+        if custom_module_names:
+            refs = self.search_read(
+                'ir.model.data',
+                domain=[
+                    ('model', '=', 'ir.model'),
+                    ('module', 'in', list(custom_module_names)),
+                ],
+                fields=['res_id'],
+            )
+            extra_ids = [r['res_id'] for r in refs if r['res_id'] not in result]
+            if extra_ids:
+                py_models = self.search_read(
+                    'ir.model',
+                    domain=[('id', 'in', extra_ids)],
+                    fields=['name', 'model', 'field_id', 'info'],
+                )
+                for m in py_models:
+                    result[m['id']] = m
+
+        return list(result.values())
+
+    def get_own_field_counts_by_model(self, custom_module_names):
+        """Devuelve {model_id: n} con solo los campos definidos en los módulos custom (no heredados)."""
+        if not custom_module_names:
+            return {}
+        refs = self.search_read(
+            'ir.model.data',
+            domain=[('model', '=', 'ir.model.fields'), ('module', 'in', list(custom_module_names))],
+            fields=['res_id'],
+            limit=0,
+        )
+        if not refs:
+            return {}
+        field_ids = [r['res_id'] for r in refs]
+        fields_info = self.search_read(
+            'ir.model.fields',
+            domain=[('id', 'in', field_ids)],
+            fields=['model_id'],
+            limit=0,
+        )
+        counts = {}
+        for fd in fields_info:
+            mid = fd['model_id'][0] if isinstance(fd['model_id'], list) else fd['model_id']
+            counts[mid] = counts.get(mid, 0) + 1
+        return counts
 
     def get_record_count(self, model_name):
         try:
